@@ -15,7 +15,7 @@ for /f "tokens=1,2 delims==" %%A in ('findstr /i "source" "%configFile%"') do (
 )
 :: Remove any leading or trailing spaces
 set "sharedrepo=%sharedrepo:~1,-1%"
-
+if
 :: Display the value (for verification)
 echo sharedrepo=%sharedrepo%
 
