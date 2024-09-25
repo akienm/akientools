@@ -2,14 +2,13 @@
 goto main
 
 :: AkienSez: Here be subroutines ---------------------------------------------------------------------------
+
 :delete_more_than_10_days_old
 :: prompt:
 :: Using only CMD.EXE, I want
 :: a batch file that will delete all the subfolders in the current folder more than 11 days old
-forfiles /p . /s /d -11 /c "cmd /c if @isdir==TRUE rd /s /q @path"
+forfiles /p %1 /s /d -11 /c "cmd /c if @isdir==TRUE rd /s /q @path"
 exit /b
-
-
 
 :: AkienSez: Here be main ---------------------------------------------------------------------------
 :main
@@ -68,7 +67,7 @@ if not exist %repo_root%\venv (
 :: AkienSez: Now we know where we are!
 cd %repo_root%
 
-:: AkienSez: Now we fix the local eeverythings
+:: AkienSez: Now we fix the local everythings
 
 set local_root=c:\publishpythonvenv
 if not exist %local_root% mkdir %local_root%
@@ -121,10 +120,16 @@ call getgitbranch /q
 set final_venv_name=%timestamp_and_author%_%getgitbranch%
 
 :: AkienSez: Now we zip it up
+
 :: AkienSez: Now we copy the zip up
+
 :: AkienSez: Now we delete more than 11 days old on server
+call delete_more_than_10_days_old %sharedstorage%
+
 :: AkienSez: Now we noclobber xcopy the whole folder down (skip already present)
+
 :: AkienSez: Now we delete more than 11 days old local
+call delete_more_than_10_days_old .
 
 :close
 endlocal

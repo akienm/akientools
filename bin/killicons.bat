@@ -1,0 +1,1 @@
+del /f /s %userprofile%\AppData\Local\Microsoft\Windows\Explorer\iconcache*.db
