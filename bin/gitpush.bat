@@ -23,18 +23,17 @@
 
 if %1.==. goto no_branch
 
-call getgitbranch > temp & <temp set /p gitpush_current_actual_branch=
-del temp
+call getgitbranch /q
 
 if %1.==/p. goto perform_pull
-if not %1.==%gitpush_current_actual_branch%. goto branch_mismatch
+if not %1.==%getgitbranch%. goto branch_mismatch
 
 :perform_pull
-echo Now performing git pull on %gitpush_current_actual_branch%
+echo Now performing git pull on %getgitbranch%
 git config --global merge.message "Merge"
 git pull --no-edit
 echo Now performing git push origin %1...
-git push origin %gitpush_current_actual_branch%
+git push origin %getgitbranch%
 goto done
 
 :no_branch
