@@ -1,4 +1,7 @@
 @echo off
+:: AkienSez: First and most important default (can be overridden)
+set server_root=\\sacappautp34\software\publishpythonvenv
+if not %1.==. set server_root=%1
 goto main
 
 :: AkienSez: Here be subroutines ---------------------------------------------------------------------------
@@ -67,13 +70,13 @@ if not exist %repo_root%\venv (
 :: AkienSez: Now we know where we are!
 cd %repo_root%
 
-:: AkienSez: Now we fix the local everythings
+:: AkienSez: This is where the meat of it begins. Now we fix the local everythings
+:: AkienSez: On jenkins, we can create a hard link to the same foldername on D:
 
 set local_root=c:\publishpythonvenv
 if not exist %local_root% mkdir %local_root%
 if not exist %local_root%\cached mkdir %local_root%\caches
 set config_file=%local_root%\config.ini
-set server_root=\\sacappautp34\software\publishpythonvenv
 if not exist %config_file% (
     if exist %server_root%\config.ini (
         copy %server_root%\config.ini %local_root%
@@ -120,16 +123,22 @@ call getgitbranch /q
 set final_venv_name=%timestamp_and_author%_%getgitbranch%
 
 :: AkienSez: Now we zip it up
+:: prompt:
+:: Using only CMD.EXE, I want
+:: A batch file fragment that will take .\venv and compress a copy of it it in to %final_venv_name%.zip
+powershell -command "Compress-Archive -Path .\venv -DestinationPath %local_root%\cached\%final_venv_name%.zip"
 
 :: AkienSez: Now we copy the zip up
+copy %local_root%\cached\%final_venv_name%.zip %sharedstorage%
 
 :: AkienSez: Now we delete more than 11 days old on server
 call delete_more_than_10_days_old %sharedstorage%
 
 :: AkienSez: Now we noclobber xcopy the whole folder down (skip already present)
+xcopy "%sharedstorage%\*" "%local_root%\cached" /E /I /Y /D
 
 :: AkienSez: Now we delete more than 11 days old local
-call delete_more_than_10_days_old .
+call delete_more_than_10_days_old %local_root%\cached
 
 :close
 endlocal
