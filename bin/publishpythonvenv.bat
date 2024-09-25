@@ -69,6 +69,7 @@ if not exist %repo_root%\venv (
 
 :: AkienSez: Now we know where we are!
 cd %repo_root%
+for %%I in (.) do set repo_name=%%~nxI
 
 :: AkienSez: This is where the meat of it begins. Now we fix the local everythings
 :: AkienSez: On jenkins, we can create a hard link to the same foldername on D:
@@ -120,7 +121,7 @@ set datetime=
 
 call getgitbranch /q
 :: Akiensez: now we have branch in getgitbranch env var
-set final_venv_name=%timestamp_and_author%_%getgitbranch%
+set final_venv_name=%timestamp_and_author%_%getgitbranch%_%repo_name%
 
 :: AkienSez: Now we zip it up
 :: prompt:
