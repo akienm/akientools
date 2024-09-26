@@ -83,7 +83,7 @@ if not exist %config_file% (
         copy %server_root%\config.ini %local_root%
     ) else (
         echo [main] > %config_file%
-        echo sharedstorage=%server_root%\caches >> %config_file%
+        echo server_root=%server_root% >> %config_file%
     )
 )
 
@@ -92,23 +92,23 @@ if not exist %config_file% (
 
 :: prompt:
 :: Using only CMD.EXE, I want
-:: a batch file that will read a value out c:\publishpythonvenv\config.ini, for section [main], key "sharedstorage", and put
-:: the value into env var sharedstorage
+:: a batch file that will read a value out c:\publishpythonvenv\config.ini, for section [main], key "server_root", and put
+:: the value into env var server_root
 setlocal enabledelayedexpansion
 :: Read the value from the config file
-for /f "tokens=1,2 delims==" %%A in ('findstr /i "sharedstorage" "%config_file%"') do (
-    if "%%A"=="sharedstorage" (
-        set "sharedstorage=%%B"
+for /f "tokens=1,2 delims==" %%A in ('findstr /i "server_root" "%config_file%"') do (
+    if "%%A"=="server_root" (
+        set "server_root=%%B"
     )
 )
 :: Remove any leading or trailing spaces
-set "sharedstorage=%sharedstorage:~1,-1%"
+set "server_root=%server_root:~1,-1%"
 
 :: Display the value (for verification)
-echo sharedstorage=%sharedstorage%
+:: echo server_root=%server_root%
 :: End of script
 
-:: Akiensez: Now sharedrepo has the location to publish to
+:: Akiensez: Now server_root has the location to publish to
 
 :: prompt:
 :: Using only CMD.EXE, I want
@@ -130,13 +130,13 @@ set final_venv_name=%timestamp_and_author%_%getgitbranch%_%repo_name%
 powershell -command "Compress-Archive -Path .\venv -DestinationPath %local_root%\cached\%final_venv_name%.zip"
 
 :: AkienSez: Now we copy the zip up
-copy %local_root%\cached\%final_venv_name%.zip %sharedstorage%
+copy %local_root%\cached\%final_venv_name%.zip %server_root%\cached
 
 :: AkienSez: Now we delete more than 11 days old on server
-call delete_more_than_10_days_old %sharedstorage%
+call delete_more_than_10_days_old %server_root%\cached
 
 :: AkienSez: Now we noclobber xcopy the whole folder down (skip already present)
-xcopy "%sharedstorage%\*" "%local_root%\cached" /E /I /Y /D
+xcopy "%server_root%\cached\*" "%local_root%\cached" /E /I /Y /D
 
 :: AkienSez: Now we delete more than 11 days old local
 call delete_more_than_10_days_old %local_root%\cached
