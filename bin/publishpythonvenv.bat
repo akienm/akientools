@@ -53,7 +53,10 @@ goto main
     echo Resulting zip is called:
     echo venv_yymmdd.hhmmss.msms_USERNAME_gitbranch_VENV_REPO_NAME.zip
     echo.
-    echo Then it's copied up.
+    echo Then it's copied up and a directory file created:
+    echo VENV_UPSTREAM\cached.txt 
+    echo This is so Jenkins can read the available venvs.
+    echo.
     echo -Akien
     echo.
     echo.
@@ -248,10 +251,11 @@ call delete_more_than_10_days_old %VENV_UPSTREAM%\cache
 :: AkienSez: Now we copy the zip up
 copy %VENV_STORE%\cache\%final_venv_name%.zip %VENV_UPSTREAM%\cache
 
+
 :: AkienSez: Now we noclobber xcopy the whole folder down (skip already present)
 xcopy "%VENV_UPSTREAM%\cache\*" "%VENV_STORE%\cache" /E /I /Y /D
 
-dir 
+dir /b "%VENV_UPSTREAM%\cache\*" > "%VENV_UPSTREAM%\cached.txt"
 
 :close
 endlocal

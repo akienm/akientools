@@ -33,6 +33,15 @@ goto main
 :: Note that usage does not allow the user to do anything else.
 :: This is to keep the flow of control simple.
 
+:: AkienSez: Here be subroutines ---------------------------------------------------------------------------
+
+:delete_more_than_10_days_old
+:: prompt:
+:: Using only CMD.EXE, I want
+:: a batch file that will delete all the subfolders in the current folder more than 11 days old
+forfiles /p %1 /s /d -11 /c "cmd /c if @isdir==TRUE rd /s /q @path"
+exit /b
+
 
 :: AkienSez: This is where the meat of it begins. Now we fix the local everythings
 :: AkienSez: On jenkins, we can create a hard link to the same foldername on D:
