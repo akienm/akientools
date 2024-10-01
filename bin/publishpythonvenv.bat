@@ -1,8 +1,67 @@
 @echo off
+:: publishpythonenv.bat
+:: Orig Akien Maciain 10/1/24
+:: 
+:: Usage
+if %1.==/?. goto usage
+if %1.==-?. goto usage
+if %1.==-h. goto usage
+if %1.==-H. goto usage
+if %1.==/h. goto usage
+if %1.==/H. goto usage
+if %1.==/help. goto usage
+if %1.==/Help. goto usage
+if %1.==/HELP. goto usage
+if %1.==--help. goto usage
+if %1.==--Help. goto usage
+if %1.==--HELP. goto usage
+goto set_first_defaults
+
+:usage
+
+:: AkienSez: This is where the meat of it begins. Now we fix the local everythings
+:: AkienSez: On jenkins, we can create a hard link to the same foldername on D:
+
+set local_root=c:\publishpythonvenv
+if not exist %local_root% mkdir %local_root%
+if not exist %local_root%\cached mkdir %local_root%\caches
+set config_file=%local_root%\config.ini
+if not exist %config_file% (
+    if exist %server_root%\config.ini (
+        copy %server_root%\config.ini %local_root%
+    ) else (
+        echo [main] > %config_file%
+        echo server_root=%server_root% >> %config_file%
+    )
+)
+
+:: AkienSez: Now we have a config.ini one way or another
+:: AkienSez: Now we read it out
+
+:: prompt:
+:: Using only CMD.EXE, I want
+:: a batch file that will read a value out c:\publishpythonvenv\config.ini, for section [main], key "server_root", and put
+:: the value into env var server_root
+setlocal enabledelayedexpansion
+:: Read the value from the config file
+for /f "tokens=1,2 delims==" %%A in ('findstr /i "server_root" "%config_file%"') do (
+    if "%%A"=="server_root" (
+        set "server_root=%%B"
+    )
+)
+:: Remove any leading or trailing spaces
+set "server_root=%server_root:~1,-1%"
+
+:: Display the value (for verification)
+:: echo server_root=%server_root%
+:: End of script
+
+:set_first_defaults
 :: AkienSez: First and most important default (can be overridden)
-set server_root=\\sacappautp34\software\publishpythonvenv
-if not %1.==. set server_root=%1
-goto main
+:: VENV_PUBLISH_SERVER can be set from outside (for testing!)
+:: Or can be passed as %1
+if not %1.==. set VENV_PUBLISH_SERVER=%1
+if %VENV_PUBLISH_SERVER%.==. set VENV_PUBLISH_SERVER=\\sacappautp34\software\publishpythonvenv
 
 :: AkienSez: Here be subroutines ---------------------------------------------------------------------------
 
@@ -71,42 +130,7 @@ if not exist %repo_root%\venv (
 cd %repo_root%
 for %%I in (.) do set repo_name=%%~nxI
 
-:: AkienSez: This is where the meat of it begins. Now we fix the local everythings
-:: AkienSez: On jenkins, we can create a hard link to the same foldername on D:
 
-set local_root=c:\publishpythonvenv
-if not exist %local_root% mkdir %local_root%
-if not exist %local_root%\cached mkdir %local_root%\caches
-set config_file=%local_root%\config.ini
-if not exist %config_file% (
-    if exist %server_root%\config.ini (
-        copy %server_root%\config.ini %local_root%
-    ) else (
-        echo [main] > %config_file%
-        echo server_root=%server_root% >> %config_file%
-    )
-)
-
-:: AkienSez: Now we have a config.ini one way or another
-:: AkienSez: Now we read it out
-
-:: prompt:
-:: Using only CMD.EXE, I want
-:: a batch file that will read a value out c:\publishpythonvenv\config.ini, for section [main], key "server_root", and put
-:: the value into env var server_root
-setlocal enabledelayedexpansion
-:: Read the value from the config file
-for /f "tokens=1,2 delims==" %%A in ('findstr /i "server_root" "%config_file%"') do (
-    if "%%A"=="server_root" (
-        set "server_root=%%B"
-    )
-)
-:: Remove any leading or trailing spaces
-set "server_root=%server_root:~1,-1%"
-
-:: Display the value (for verification)
-:: echo server_root=%server_root%
-:: End of script
 
 :: Akiensez: Now server_root has the location to publish to
 
