@@ -28,29 +28,27 @@ goto main
     echo network publishing system will both push to jfrog, but also push a venv
     echo that Jenkins can just download and activcate to save pip install time.
     echo.
-    echo To run this batch successfully... (this is the long part) it needs config 
-    echo info. It can get those thru an INI file, environment variables, or built
-    echo in defaults. 
+    echo To run this batch successfully... 
+    echo.
+    echo Normally all you have to do is run it. It sorts everything itself.
+    echo there are no additional command line arguments except for those seeking
+    echo help.
     echo.
     echo Sorry, but at the moment, the only way to know all is to read the code.
-    echo But here's a sumation of important parts:
+    echo But here's a sumation of important parts. You can pre-create any of the 
+    echo folders or variables (makes for easy testing):
     echo.
-    echo VENV_UPSTREAM  - store on the server
+    echo VENV_UPSTREAM  - file store on the server
     echo                  defaults to: \\sacappautp34\software\VENV_UPSTREAM
-    echo VENV_STORE     - store locally. Can be either:
+    echo VENV_STORE     - file store locally. Can be either:
     echo                  D:\ENV_STORE (checked for first)
     echo                  C:\ENV_STORE (checked for second)
     echo VENV_CONFIG    - local config file after execution and setup
-    echo                  Usually VENV_STORE+
-    echo VENV_REPO_ROOT - The repo to be published
-    echo VENV_REPO_NAME - derived from repo folder that has PUBLISHABLE.VENV.READY in it
-    echo.
-    echo All can be overridden by simply creating them before hand. Same with:
-    echo.
-    echo.
-    echo And
-    echo.
-    echo \\sacappautp34\software\VENV_UPSTREAM
+    echo                  Usually VENV_STORE\VENV_CONFIG.ini
+    echo VENV_REPO_ROOT - The root folder path of the repo to be published. Should 
+    echo                  contain a venv to publish. Identified by the file because 
+    echo                  it contains a file of any length called PUBLISHABLE.VENV.READY
+    echo VENV_REPO_NAME - Folder name for the root of the repo.
     echo.
     echo Resulting zip is called:
     echo venv_yymmdd.hhmmss.msms_USERNAME_gitbranch_VENV_REPO_NAME.zip
@@ -186,8 +184,8 @@ if not exist %VENV_REPO_ROOT%\venv (
 cd %VENV_REPO_ROOT%
 for %%I in (.) do set VENV_REPO_NAME=%%~nxI
 
-
 :: Akiensez: Now server_root has the location to publish to
+:: Akiensez: And we should now be in that folder
 
 :: prompt:
 :: Using only CMD.EXE, I want
@@ -195,8 +193,43 @@ for %%I in (.) do set VENV_REPO_NAME=%%~nxI
 for /f "tokens=2 delims==" %%i in ('"wmic os get localdatetime /value"') do set datetime=%%i
 set datetime=%datetime:~0,4%-%datetime:~4,2%-%datetime:~6,2%-%datetime:~8,2%-%datetime:~10,2%-%datetime:~12,2%.%datetime:~15,4%
 
+:: Akiensez: Included Module. See github/AkienTools
+@echo off
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: Script:
+::   getgitbranch
+::
+:: Purpose:
+::   if you're in a folder that's a gitrepo, returns the name of the active
+::   branch. called from many scripts.
+::
+:: Arguments:
+::   /q means set the variable, but be quiet
+::
+:: Returns:
+::   via the console, the branch or nothing
+::   Leaves found branch in getgitbranch
+::
+:: Dependencies:
+::   git
+::
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-call getgitbranch /q
+set myname=%temp%\getgitbranch
+set raw=%myname%_raw.tmp
+set found_branch=%myname%_found_branch.tmp
+if exist %myname%*.tmp del %myname%*.tmp
+
+git branch > %raw%
+type %raw% | find "*" > %found_branch%
+<%found_branch% set /p getgitbranch=
+set getgitbranch=%getgitbranch:~2,2000%
+if not %1.==/q echo %getgitbranch%
+
+del %myname%*.tmp
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
 :: Akiensez: now we have branch in getgitbranch env var
 set final_venv_name=venv_%datetime%_%USERNAME%_%getgitbranch%_%VENV_REPO_NAME%
 
@@ -204,19 +237,21 @@ set final_venv_name=venv_%datetime%_%USERNAME%_%getgitbranch%_%VENV_REPO_NAME%
 :: prompt:
 :: Using only CMD.EXE, I want
 :: A batch file fragment that will take .\venv and compress a copy of it it in to %final_venv_name%.zip
-powershell -command "Compress-Archive -Path .\venv -DestinationPath %local_root%\cached\%final_venv_name%.zip"
-
-:: AkienSez: Now we copy the zip up
-copy %local_root%\cached\%final_venv_name%.zip %server_root%\cached
-
-:: AkienSez: Now we delete more than 11 days old on server
-call delete_more_than_10_days_old %server_root%\cached
-
-:: AkienSez: Now we noclobber xcopy the whole folder down (skip already present)
-xcopy "%server_root%\cached\*" "%local_root%\cached" /E /I /Y /D
+powershell -command "Compress-Archive -Path .\venv -DestinationPath %local_root%\cache\%final_venv_name%.zip"
 
 :: AkienSez: Now we delete more than 11 days old local
-call delete_more_than_10_days_old %local_root%\cached
+call delete_more_than_10_days_old %VENV_STORE%\cache
+
+:: AkienSez: Now we delete more than 11 days old on server
+call delete_more_than_10_days_old %VENV_UPSTREAM%\cache
+
+:: AkienSez: Now we copy the zip up
+copy %VENV_STORE%\cache\%final_venv_name%.zip %VENV_UPSTREAM%\cache
+
+:: AkienSez: Now we noclobber xcopy the whole folder down (skip already present)
+xcopy "%VENV_UPSTREAM%\cache\*" "%VENV_STORE%\cache" /E /I /Y /D
+
+dir 
 
 :close
 endlocal
