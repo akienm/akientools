@@ -33,7 +33,9 @@ if not exist %VENV_STORE%\cache\%1 (
     pip install -r %VENV_UPSTREAM%\cache\%1\requirements_gui.txt
     mkdir %VENV_STORE%\cache\%1\metadata
     copy %VENV_UPSTREAM%\cache\%1\* %VENV_STORE%\cache\%1\metadata
-) 
+) else (
+    call %VENV_STORE%\cache\%1\scripts\activate
+)
 
 :close
 endlocal
