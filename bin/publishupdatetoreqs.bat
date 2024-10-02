@@ -54,65 +54,48 @@ if %VENV_REPO_ROOT%.==none. (
 cd %VENV_REPO_ROOT%
 for %%I in (.) do set VENV_REPO_NAME=%%~nxI
 
-:: Akiensez: Now server_root has the location to publish to
-:: Akiensez: And we should now be in the repo folder
+:: Akiensez: we should now be in the repo folder
 
-:: Akiensez: Included Module. See github/AkienTools
-@echo off
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:: Script:
-::   getgitbranch
-::
-:: Purpose:
-::   if you're in a folder that's a gitrepo, returns the name of the active
-::   branch. called from many scripts.
-::
-:: Arguments:
-::   /q means set the variable, but be quiet
-::
-:: Returns:
-::   via the console, the branch or nothing
-::   Leaves found branch in getgitbranch
-::
-:: Dependencies:
-::   git
-::
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-set myname=%temp%\getgitbranch
-set raw=%myname%_raw.tmp
-set found_branch=%myname%_found_branch.tmp
-if exist %myname%*.tmp del %myname%*.tmp
-
-git branch > %raw%
-type %raw% | find "*" > %found_branch%
-<%found_branch% set /p getgitbranch=
-set getgitbranch=%getgitbranch:~2,2000%
-if not %1.==/q echo %getgitbranch%
-
-del %myname%*.tmp
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-:: GET THE COMMIT ID
+:: GET THE COMMIT ID for %VENV_REPO_ROOT%\lstaf\requirements_gui.txt
 for /f %%i in ('git log -n 1 --pretty=format:%%H -- %VENV_REPO_ROOT%\lstaf\requirements_gui.txt') do set commit_hash=%%i
 
-REM Extract the last 5 characters of the commit hash
+:: Extract the last 5 characters of the commit hash
 set commit_id=!commit_hash:~-5!
 
 :: Akiensez: now we have branch in getgitbranch env var
-set final_venv_name=venv_%commit_id%_%getgitbranch%_%VENV_REPO_NAME%
+set final_venv_name=venv_%commit_id%_%VENV_REPO_NAME%
 
 if not exist %VENV_UPSTREAM%\cache\%final_venv_name% (
-    :: Akiensez: And we should now be in the repo folder
+
+    :: make our new home
+    mkdir %VENV_UPSTREAM%\cache\%final_venv_name%
+    copy %VENV_REPO_ROOT%\lstaf\requirements*.txt %VENV_UPSTREAM%\cache\%final_venv_name%
+
     :: prompt:
     :: Using only CMD.EXE, I want
     :: to generate a timestamp in the form yyyy-mm-dd-hh-mm-ss.mmmm
     for /f "tokens=2 delims==" %%i in ('"wmic os get localdatetime /value"') do set datetime=%%i
     set datetime=%datetime:~0,4%-%datetime:~4,2%-%datetime:~6,2%-%datetime:~8,2%-%datetime:~10,2%-%datetime:~12,2%.%datetime:~15,4%
 
-    mkdir %VENV_UPSTREAM%\cache\%final_venv_name%
-    copy %VENV_REPO_ROOT%\lstaf\requirements*.txt %VENV_UPSTREAM%\cache\%final_venv_name%
-    echo venv_%datetime%_%username%_%commit_id%_%getgitbranch%_%VENV_REPO_NAME% > venv_%datetime%_%username%_%commit_id%_%getgitbranch%_%VENV_REPO_NAME%.metadata
+    ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    :: Akiensez: Included Module. See github/AkienTools
+    :: Script: getgitbranch
+    set myname=%temp%\getgitbranch
+    set raw=%myname%_raw.tmp
+    set found_branch=%myname%_found_branch.tmp
+    if exist %myname%*.tmp del %myname%*.tmp
+
+    git branch > %raw%
+    type %raw% | find "*" > %found_branch%
+    <%found_branch% set /p getgitbranch=
+    set getgitbranch=%getgitbranch:~2,2000%
+    if not %1.==/q echo %getgitbranch%
+
+    del %myname%*.tmp
+    ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    set final_metadata_string=venv_%datetime%_%username%_%commit_id%_%getgitbranch%_%VENV_REPO_NAME%
+    echo %final_metadata_string% > %VENV_UPSTREAM%\cache\%final_venv_name%\%final_metadata_string%.metadata
 ) 
 
 :: AkienSez: Now we need to produce the output for jenkins to read
