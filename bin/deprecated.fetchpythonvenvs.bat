@@ -98,5 +98,7 @@ xcopy "%VENV_UPSTREAM%\cache\*" "%VENV_STORE%\cache" /E /I /Y /D
 :: AkienSez: Now we delete more than 11 days old local
 call delete_more_than_10_days_old %VENV_STORE%\cache
 
+if exist 
+
 :close
 endlocal

@@ -54,7 +54,7 @@ goto main
     echo venv_yymmdd.hhmmss.msms_USERNAME_gitbranch_VENV_REPO_NAME.zip
     echo.
     echo Then it's copied up and a directory file created:
-    echo VENV_UPSTREAM\cached.txt 
+    echo VENV_UPSTREAM\cache.list.txt
     echo This is so Jenkins can read the available venvs.
     echo.
     echo -Akien
@@ -236,11 +236,22 @@ del %myname%*.tmp
 :: Akiensez: now we have branch in getgitbranch env var
 set final_venv_name=venv_%datetime%_%USERNAME%_%getgitbranch%_%VENV_REPO_NAME%
 
+:: Akiensez: Do we have to uninstall and reinstall the repo we're in?
+:: pip uninstall ???
+:: Need to know:
+::   * What does this repo install itself as?
+::   * Is it installed as writable?
+::     Y: We should prolly uninstall it, but note we have to put it back
+::   * We need to install it into the venv, from this location, but not as writable
+
 :: AkienSez: Now we zip it up
 :: prompt:
 :: Using only CMD.EXE, I want
 :: A batch file fragment that will take .\venv and compress a copy of it it in to %final_venv_name%.zip
-powershell -command "Compress-Archive -Path .\venv -DestinationPath %local_root%\cache\%final_venv_name%.zip"
+powershell -command "Compress-Archive -Path .\venv -DestinationPath %VENV_STORE%\cache\%final_venv_name%.zip"
+
+:: Akiensez: Here, if we uninstalled this repo from writable, then 
+:: We need to reinstall it here.
 
 :: AkienSez: Now we delete more than 11 days old local
 call delete_more_than_10_days_old %VENV_STORE%\cache
@@ -251,11 +262,19 @@ call delete_more_than_10_days_old %VENV_UPSTREAM%\cache
 :: AkienSez: Now we copy the zip up
 copy %VENV_STORE%\cache\%final_venv_name%.zip %VENV_UPSTREAM%\cache
 
-
 :: AkienSez: Now we noclobber xcopy the whole folder down (skip already present)
 xcopy "%VENV_UPSTREAM%\cache\*" "%VENV_STORE%\cache" /E /I /Y /D
 
-dir /b "%VENV_UPSTREAM%\cache\*" > "%VENV_UPSTREAM%\cache.list.txt"
-
+:: AkienSez: Now we need to produce the output for jenkins to read
+:: Prompt: I have a batch file, it produces a list in this way: dir /B /O:-N > output.txt
+:: All the files in this folder are .zip files.
+:: I want to show the list in the way the dir command does, except without the .zip extensions.
+:: how?
+> %VENV_UPSTREAM%\cache.list.txt (
+    for /f "delims=" %%i in ('dir /B /O:-N %VENV_UPSTREAM%\cache\*.zip') do (
+        set "filename=%%~ni"
+        echo !filename!
+    )
+)
 :close
 endlocal
