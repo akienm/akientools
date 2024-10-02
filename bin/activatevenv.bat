@@ -18,18 +18,24 @@ if not exist %VENV_UPSTREAM%\cache\%1 (
     echo Oh Nos!
     echo I am so sad friendly person, but I can't help you with this but...
     echo.
-    echo You're not in a repo folder!
+    echo The specified thing as parameter 1 on the command line...
+    echo which is: %1 
+    echo is not found in %VENV_UPSTREAM%\cache
     echo.
-    echo ~crying~ Oh, you must be in an actual repo folder when you rubn publishpythonenv!
+    echo Check it out:
+    echo dir of that folder:
+    dir %VENV_UPSTREAM%\cache
     echo.
-    echo Dispair! Sadness! Please try again!
+    echo ~crying~ Oh, i can't imagine how this happened! ~sob~
+    echo.
+    echo Dispair! Sadness! GET HELP! GET AKIEN!
     echo.
     goto close
 )
 
-if not exist %VENV_STORE%\cache\%1 (
+if not exist %VENV_STORE%\cache\%1\scripts\activate.bat (
     venv --copies --clear %VENV_STORE%\cache\%1
-    call %VENV_STORE%\cache\%1\scripts\activate
+    call %VENV_STORE%\cache\%1\scripts\activate.bat
     pip install -r %VENV_UPSTREAM%\cache\%1\requirements_gui.txt
     mkdir %VENV_STORE%\cache\%1\metadata
     copy %VENV_UPSTREAM%\cache\%1\* %VENV_STORE%\cache\%1\metadata

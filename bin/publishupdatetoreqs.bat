@@ -1,5 +1,7 @@
 @echo off
 
+:: TODO: MOD BOTH SIDES OF THIS TO SORT OUT HOW TO PRESENT METADATA NAME, BUT GET FOLDERNAME BACK
+
 :: AkienSez: Here be main ---------------------------------------------------------------------------
 :main
 
