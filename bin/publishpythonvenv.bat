@@ -255,7 +255,7 @@ copy %VENV_STORE%\cache\%final_venv_name%.zip %VENV_UPSTREAM%\cache
 :: AkienSez: Now we noclobber xcopy the whole folder down (skip already present)
 xcopy "%VENV_UPSTREAM%\cache\*" "%VENV_STORE%\cache" /E /I /Y /D
 
-dir /b "%VENV_UPSTREAM%\cache\*" > "%VENV_UPSTREAM%\cached.txt"
+dir /b "%VENV_UPSTREAM%\cache\*" > "%VENV_UPSTREAM%\cache.list.txt"
 
 :close
 endlocal
