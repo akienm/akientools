@@ -38,4 +38,3 @@ if not exist %VENV_STORE%\cache\%1 (
 call %VENV_STORE%\cache\%1\scripts\activate
 
 :close
-endlocal
