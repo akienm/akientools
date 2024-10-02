@@ -45,10 +45,11 @@ if %VENV_REPO_ROOT%.==none. (
     echo.
     echo You're not in a repo folder!
     echo.
-    echo ~crying~ Oh, you must be in an actual repo folder when you rubn publishpythonenv!
+    echo ~crying~ Oh, you must be in an actual repo folder when you run this batch!
     echo.
-    echo Dispair! Sadness! Please try again!
+    echo Dispair! Sadness! Go there and please try again!
     echo.
+    pause
     goto close
 )
 
@@ -71,6 +72,7 @@ if not exist %VENV_UPSTREAM%\cache\%final_venv_name% (
 
     :: make our new home
     mkdir %VENV_UPSTREAM%\cache\%final_venv_name%
+    if not exist mkdir %VENV_UPSTREAM%\cache\%final_venv_name% goto permissions_failure
     copy %VENV_REPO_ROOT%\lstaf\requirements*.txt %VENV_UPSTREAM%\cache\%final_venv_name%
 
     :: prompt:
@@ -111,5 +113,24 @@ if not exist %VENV_UPSTREAM%\cache\%final_venv_name% (
         echo !filename!
     )
 )
+
+goto close
+
+:permissions_failure
+    echo.
+    echo Oh Nos!
+    echo I am so sad friendly person, but I can't help you with this but...
+    echo.
+    echo I couldn't create %VENV_UPSTREAM%\cache\%final_venv_name%
+    echo.
+    echo ~crying~ Oh, you must have permissions to write to that folder! ~sob~
+    echo.
+    echo Dispair! Sadness! 
+    echo.
+    echo GET HELP! GET AKIEN! TELL HIM YOU NEED PERMISSIONS TO WRITE TO 
+    echo %VENV_UPSTREAM%
+    echo.
+    pause
+    goto close
 
 :close

@@ -28,7 +28,11 @@ if not exist %VENV_UPSTREAM%\cache\%1 (
     echo.
     echo ~crying~ Oh, i can't imagine how this happened! ~sob~
     echo.
-    echo Dispair! Sadness! GET HELP! GET AKIEN!
+    echo GET HELP! GET AKIEN! TELL HIM I COULDN'T FIND
+    echo %VENV_UPSTREAM%\%1
+    echo IT'S OUR ONLY HOPE!
+    echo.
+    echo ~ Dispair! ~sniffle~ Sadness! ~
     echo.
     goto close
 )
