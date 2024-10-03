@@ -68,7 +68,7 @@ set commit_id=!commit_hash:~-5!
 :: Akiensez: now we have branch in getgitbranch env var
 set final_venv_name=venv_%commit_id%_%VENV_REPO_NAME%
 
-if not exist %VENV_UPSTREAM%\cache\%final_venv_name% (
+if not exist %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_gui.txt (
 
     :: make our new home
     mkdir %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_gui.txt
@@ -101,8 +101,8 @@ if not exist %VENV_UPSTREAM%\cache\%final_venv_name% (
     ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     set final_metadata_string=venv_%datetime%_%username%_%commit_id%_%getgitbranch%_%VENV_REPO_NAME%
-    echo %final_metadata_string% > %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_api.txt\%final_metadata_string%.metadata
-    echo %final_metadata_string% > %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_gui.txt\%final_metadata_string%.metadata
+    echo %final_metadata_string% > venv_%VENV_UPSTREAM%\cache\%final_venv_name%_requirements_api.txt\%final_metadata_string%.metadata
+    echo %final_metadata_string% > venv_%VENV_UPSTREAM%\cache\%final_venv_name%_requirements_gui.txt\%final_metadata_string%.metadata
 ) 
 
 :: AkienSez: Now we need to produce the output for jenkins to read
