@@ -1,6 +1,6 @@
 @echo off
 
-:: TODO: MOD BOTH SIDES OF THIS TO SORT OUT HOW TO PRESENT METADATA NAME, BUT GET FOLDERNAME BACK
+:: TODO: Full docs
 
 :: AkienSez: Here be main ---------------------------------------------------------------------------
 :main
@@ -8,7 +8,7 @@
 :: AkienSez: First and most important work out where the things we need are
 if %VENV_UPSTREAM%.==. set VENV_UPSTREAM=\\sacappautp34\software\VENV_UPSTREAM
 
-if %VENV_STORE%.==. set if exist D:\*.* set VENV_STORE=D:\VENV_STORE
+if %VENV_STORE%.==. set if exist D:\jenkins\*.* set VENV_STORE=D:\VENV_STORE
 if %VENV_STORE%.==. set if exist C:\ENV_STORE set VENV_STORE=C:\VENV_STORE
 
 if not exist %VENV_STORE% mkdir %VENV_STORE%
@@ -73,9 +73,9 @@ if not exist %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_gui.txt (
     :: make our new home
     mkdir %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_gui.txt
     if not exist %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_gui.txt goto permissions_failure
-    copy %VENV_REPO_ROOT%\lstaf\requirements_gui.txt %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_gui.txt\
+    copy %VENV_REPO_ROOT%\lstaf\requirements_gui.txt %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_gui.txt\requirements.txt
     mkdir %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_api.txt
-    copy %VENV_REPO_ROOT%\lstaf\requirements_api.txt %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_api.txt\
+    copy %VENV_REPO_ROOT%\lstaf\requirements_api.txt %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_api.txt\requirements.txt
 
     :: prompt:
     :: Using only CMD.EXE, I want
@@ -110,7 +110,7 @@ if not exist %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_gui.txt (
 :: All the files in this folder are .zip files.
 :: I want to show the list in the way the dir command does, except without the .zip extensions.
 :: how?
-dir /B /O:-N %VENV_UPSTREAM%\cache\ > %VENV_UPSTREAM%\cache.list.txt
+:: dir /B /O:-N %VENV_UPSTREAM%\cache\ > %VENV_UPSTREAM%\cache.list.txt
 
 :: AkienSez: Now we would like a CSV just in case Yuriy can use that :)
 
@@ -121,12 +121,12 @@ dir /B /O:-N %VENV_UPSTREAM%\cache\ > %VENV_UPSTREAM%\cache.list.txt
 :: and produce a csv file called c:\cache\cache.list.csv in the form:
 :: venv_folder1, venv_dave_2024_01_01
 :: venv_folder2, venv_john_2024_02_14
-echo Folder, Metadata > "%VENV_UPSTREAM%\cache.list.txt"
+:: echo Folder, Metadata > "%VENV_UPSTREAM%\cache.list.csv
 for /d %%D in ("%VENV_UPSTREAM%\cache\venv_*") do (
     set "folder_name=%%~nxD"
     for %%F in ("%%D\*.metadata") do (
         set "file_name=%%~nF"
-        echo !folder_name!, !file_name! >> %VENV_UPSTREAM%\cache.list.txt
+        echo !file_name! !folder_name! >> %VENV_UPSTREAM%\cache.list.txt
     )
 )
 

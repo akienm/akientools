@@ -1,5 +1,7 @@
 @echo off
 
+:: TODO: Full Docs
+
 :: %1 is the requirements entry name... commitID_repo
 :: %2 is which requirements file to activate for... REQUIRED! 
 ::    as of this writing, requirements_gui.txt and requirements_api.txt are allowed
@@ -11,20 +13,20 @@
 :: AkienSez: First and most important work out where the things we need are
 if %VENV_UPSTREAM%.==. set VENV_UPSTREAM=\\sacappautp34\software\VENV_UPSTREAM
 
-if %VENV_STORE%.==. set if exist D:\*.* set VENV_STORE=D:\VENV_STORE
+if %VENV_STORE%.==. set if exist D:\jenkins\*.* set VENV_STORE=D:\VENV_STORE
 if %VENV_STORE%.==. set if exist C:\ENV_STORE set VENV_STORE=C:\VENV_STORE
 
 if not exist %VENV_STORE% mkdir %VENV_STORE%
 if not exist %VENV_STORE%\cache mkdir %VENV_STORE%\cache
 
 
-if not exist %VENV_UPSTREAM%\cache\%1_%2 (
+if not exist %VENV_UPSTREAM%\cache\%2 (
     echo.
     echo Oh Nos!
     echo I am so sad friendly person, but I can't help you with this but...
     echo.
     echo The specified things on the command line...
-    echo which is: %1_%2 
+    echo which is: %2 
     echo is not found in %VENV_UPSTREAM%\cache
     echo.
     echo Check it out:
@@ -34,7 +36,7 @@ if not exist %VENV_UPSTREAM%\cache\%1_%2 (
     echo ~crying~ Oh, i can't imagine how this happened! ~sob~
     echo.
     echo GET HELP! GET AKIEN! TELL HIM I COULDN'T FIND
-    echo %VENV_UPSTREAM%\%1_%2
+    echo %VENV_UPSTREAM%\%2
     echo IT'S OUR ONLY HOPE!
     echo.
     echo ~ Dispair! ~sniffle~ Sadness! ~
@@ -42,14 +44,14 @@ if not exist %VENV_UPSTREAM%\cache\%1_%2 (
     goto close
 )
 
-if not exist %VENV_STORE%\cache\%1_%2\scripts\activate.bat (
-    venv --copies --clear %VENV_STORE%\cache\%1_%2
-    call %VENV_STORE%\cache\%1_%2\scripts\activate.bat
-    pip install -r %VENV_UPSTREAM%\cache\%1_%2\requirements_gui.txt
-    mkdir %VENV_STORE%\cache\%1_%2\metadata
-    copy %VENV_UPSTREAM%\cache\%1_%2\* %VENV_STORE%\cache\%1_%2\metadata
+if not exist %VENV_STORE%\cache\%2\scripts\activate.bat (
+    venv --copies --clear %VENV_STORE%\cache\%2
+    call %VENV_STORE%\cache\%2\scripts\activate.bat
+    pip install -r %VENV_UPSTREAM%\cache\%2\requirements.txt
+    mkdir %VENV_STORE%\cache\%2\metadata
+    copy %VENV_UPSTREAM%\cache\%2\* %VENV_STORE%\cache\%2\metadata
 )
 
-call %VENV_STORE%\cache\%1_%2\scripts\activate
+call %VENV_STORE%\cache\%2\scripts\activate
 
 :close
