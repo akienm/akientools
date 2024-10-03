@@ -71,9 +71,11 @@ set final_venv_name=venv_%commit_id%_%VENV_REPO_NAME%
 if not exist %VENV_UPSTREAM%\cache\%final_venv_name% (
 
     :: make our new home
-    mkdir %VENV_UPSTREAM%\cache\%final_venv_name%
-    if not exist mkdir %VENV_UPSTREAM%\cache\%final_venv_name% goto permissions_failure
-    copy %VENV_REPO_ROOT%\lstaf\requirements*.txt %VENV_UPSTREAM%\cache\%final_venv_name%
+    mkdir %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_gui.txt
+    if not exist %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_gui.txt goto permissions_failure
+    copy %VENV_REPO_ROOT%\lstaf\requirements_gui.txt %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_gui.txt\
+    mkdir %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_api.txt
+    copy %VENV_REPO_ROOT%\lstaf\requirements_api.txt %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_api.txt\
 
     :: prompt:
     :: Using only CMD.EXE, I want
@@ -99,7 +101,8 @@ if not exist %VENV_UPSTREAM%\cache\%final_venv_name% (
     ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     set final_metadata_string=venv_%datetime%_%username%_%commit_id%_%getgitbranch%_%VENV_REPO_NAME%
-    echo %final_metadata_string% > %VENV_UPSTREAM%\cache\%final_venv_name%\%final_metadata_string%.metadata
+    echo %final_metadata_string% > %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_api.txt\%final_metadata_string%.metadata
+    echo %final_metadata_string% > %VENV_UPSTREAM%\cache\%final_venv_name%_requirements_gui.txt\%final_metadata_string%.metadata
 ) 
 
 :: AkienSez: Now we need to produce the output for jenkins to read
@@ -107,10 +110,23 @@ if not exist %VENV_UPSTREAM%\cache\%final_venv_name% (
 :: All the files in this folder are .zip files.
 :: I want to show the list in the way the dir command does, except without the .zip extensions.
 :: how?
-> %VENV_UPSTREAM%\cache.list.txt (
-    for /f "delims=" %%i in ('dir /B /O:-N %VENV_UPSTREAM%\cache\*.zip') do (
-        set "filename=%%~ni"
-        echo !filename!
+dir /B /O:-N %VENV_UPSTREAM%\cache\ > %VENV_UPSTREAM%\cache.list.txt
+
+:: AkienSez: Now we would like a CSV just in case Yuriy can use that :)
+
+:: Prompt: Ok, here's a hard one for you. I have a cache folder called c:\cache. Inside of it will be a 
+:: group of timestamped folders all starting with "venv_<something>". Inside of each of those folders 
+:: is a file called venv_%USERNAME%_%datestamp%.metadata. in a cmd.exe batch file, I want to read each 
+:: of those folders, and get the name portion of the .metadata file (removing the .metadata extension), 
+:: and produce a csv file called c:\cache\cache.list.csv in the form:
+:: venv_folder1, venv_dave_2024_01_01
+:: venv_folder2, venv_john_2024_02_14
+echo Folder, Metadata > "%VENV_UPSTREAM%\cache.list.txt"
+for /d %%D in ("%VENV_UPSTREAM%\cache\venv_*") do (
+    set "folder_name=%%~nxD"
+    for %%F in ("%%D\*.metadata") do (
+        set "file_name=%%~nF"
+        echo !folder_name!, !file_name! >> %VENV_UPSTREAM%\cache.list.txt
     )
 )
 

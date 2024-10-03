@@ -1,5 +1,10 @@
 @echo off
 
+:: %1 is the requirements entry name... commitID_repo
+:: %2 is which requirements file to activate for... REQUIRED! 
+::    as of this writing, requirements_gui.txt and requirements_api.txt are allowed
+:: AND NO CHECKING IS DONE BY THIS FILE SO YOU'RE ON YOUR OWN!
+:: SO BEWARE!
 :: AkienSez: Here be main ---------------------------------------------------------------------------
 :main
 
@@ -13,13 +18,13 @@ if not exist %VENV_STORE% mkdir %VENV_STORE%
 if not exist %VENV_STORE%\cache mkdir %VENV_STORE%\cache
 
 
-if not exist %VENV_UPSTREAM%\cache\%1 (
+if not exist %VENV_UPSTREAM%\cache\%1_%2 (
     echo.
     echo Oh Nos!
     echo I am so sad friendly person, but I can't help you with this but...
     echo.
-    echo The specified thing as parameter 1 on the command line...
-    echo which is: %1 
+    echo The specified things on the command line...
+    echo which is: %1_%2 
     echo is not found in %VENV_UPSTREAM%\cache
     echo.
     echo Check it out:
@@ -29,7 +34,7 @@ if not exist %VENV_UPSTREAM%\cache\%1 (
     echo ~crying~ Oh, i can't imagine how this happened! ~sob~
     echo.
     echo GET HELP! GET AKIEN! TELL HIM I COULDN'T FIND
-    echo %VENV_UPSTREAM%\%1
+    echo %VENV_UPSTREAM%\%1_%2
     echo IT'S OUR ONLY HOPE!
     echo.
     echo ~ Dispair! ~sniffle~ Sadness! ~
@@ -37,14 +42,14 @@ if not exist %VENV_UPSTREAM%\cache\%1 (
     goto close
 )
 
-if not exist %VENV_STORE%\cache\%1\scripts\activate.bat (
-    venv --copies --clear %VENV_STORE%\cache\%1
-    call %VENV_STORE%\cache\%1\scripts\activate.bat
-    pip install -r %VENV_UPSTREAM%\cache\%1\requirements_gui.txt
-    mkdir %VENV_STORE%\cache\%1\metadata
-    copy %VENV_UPSTREAM%\cache\%1\* %VENV_STORE%\cache\%1\metadata
+if not exist %VENV_STORE%\cache\%1_%2\scripts\activate.bat (
+    venv --copies --clear %VENV_STORE%\cache\%1_%2
+    call %VENV_STORE%\cache\%1_%2\scripts\activate.bat
+    pip install -r %VENV_UPSTREAM%\cache\%1_%2\requirements_gui.txt
+    mkdir %VENV_STORE%\cache\%1_%2\metadata
+    copy %VENV_UPSTREAM%\cache\%1_%2\* %VENV_STORE%\cache\%1_%2\metadata
 )
 
-call %VENV_STORE%\cache\%1\scripts\activate
+call %VENV_STORE%\cache\%1_%2\scripts\activate
 
 :close
