@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "cp --debug --force --preserve=timestamps --recursive --verbose $1 $2 $3 $4 $5 $6 $7 $8"
+cp --force --preserve=timestamps --recursive --verbose $1 $2 $3 $4 $5 $6 $7 $8
+

@@ -1,0 +1,19 @@
+#!/bin/bash
+# logger_for_bash shell script
+timestamp() {
+    date +"%Y-%m-%d.%H:%M:%S.%4N"
+}
+export timestamp
+logcmd() {
+    echo "$(timestamp) \$ $@"  | tee -a "${logtarget}"
+    $@  | tee -a "${logtarget}"
+    result_code=$?
+    echo "$(timestamp) result_code=$result_code"  | tee -a "${logtarget}"
+    echo ""  | tee -a "${logtarget}"
+}
+export logcmd
+logecho() {
+    echo "$(timestamp) $@"  | tee -a "${logtarget}"
+}
+echo "" > "${logtarget}"
+chmod 777 "${logtarget}"

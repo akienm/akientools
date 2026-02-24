@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# Define common options for all shares
+common_options="credentials=/etc/smb-credentials,uid=1000,gid=1000"
+
+
+# Mount //10.0.0.11/public
+# source1="//10.0.0.11/public"
+# target1="/media/akienm/NAS2"
+# if [ ! -d "$target1" ]; then
+#   echo "Creating mount point: $target1"
+#   sudo mkdir -p "$target1"
+#   echo "Setting ownership to $USER:$(id -g -n) and permissions to 755 for: $target1"
+#   sudo chown "$USER:$(id -g -n)" "$target1"
+#   sudo chmod 755 "$target1"
+# fi
+# echo "Mounting $source1 to $target1 with options: $common_options"
+# sudo mount -t cifs "$source1" "$target1" -o "$common_options"
+# if mount | grep -q "$target1"; then
+#   echo "Mounted successfully: $target1"
+# else
+#   echo "Failed to mount: $target1"
+# fi
+
+echo "Mounting drives requires root"
+sudo echo "Login OK"
+
+attemptmount() {
+    if [ ! -d "$target2" ]; then
+        echo '$ sudo mkdir -p "$target2"'
+        sudo mkdir -p "$target2"
+        result_code=$?
+        echo "result_code=${result_code}"
+    fi
+    echo '$ chown "$USER:$(id -g -n)" "$target2"'
+    sudo chown "$USER:$(id -g -n)" "$target2"
+    result_code=$?
+    echo "result_code=${result_code}"
+    echo '$ sudo chmod 755 "$target2"'
+    sudo chmod 755 "$target2"
+    result_code=$?
+    echo "result_code=${result_code}"
+    echo "$ sudo mount -t cifs "$source2" "$target2" -o "$common_options""
+    sudo mount -t cifs "$source2" "$target2" -o "$common_options"
+    result_code=$?
+    echo "result_code=${result_code}"
+    if mount | grep -q "$target2"; then
+        echo "Mounted successfully: $target2"
+    else
+        echo "ERROR ERROR ERROR: Failed to mount: $target2"
+    fi
+}
+
+# Mount //10.0.0.11/AkiensWorld
+source2="//10.0.0.11/AkiensWorld"
+target2="/media/akienm/AkiensWorld"
+attemptmount
+
+# Mount //10.0.0.12/AkiensWorld.bak
+source4="//10.0.0.12/AkiensWorld.bak"
+target4="/media/akienm/AkiensWorld.bak"
+# attemptmount

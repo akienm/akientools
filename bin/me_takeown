@@ -1,0 +1,7 @@
+#!/bin/bash
+
+
+USER=$(whoami)
+GROUP=$(id -gn)
+sudo chown -Rv "$USER":"$GROUP" .
+chmod -R a+rw .

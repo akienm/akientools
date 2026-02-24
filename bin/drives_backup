@@ -1,0 +1,140 @@
+#!/bin/bash
+# --acls              - Preserve ACL
+# --archive           - Archive. This is equivalent to -rlptgoD
+# --delete-before     - kinda self explanitory
+# --executability     - Preserve Executability
+# --human-readable    -
+# --one-file-system   - Don't cross file system boundaries
+# --verbose --verbose - By default, rsync works silently. A single -v will give you information about what
+#                       files are being transferred and a brief summary at the end. Two -v options will
+#                       give you information on what files are being skipped and slightly more information
+#                       at the end.
+# --xattrs            - Preserve extended attributes
+
+# OneDrive (handled by onedrive sync client) - WE DO NOT HAVE TO REQUEST A SYNC
+# rsync $rsync_defaults_for_whole_drive_backup /media/akienm/OneDrive/ /media/akienm/AkiensWorld/OneDrive
+
+# GoogleDrive (handled by TBD) - AS YET UNKNOWN
+# 1) Run google-drive-ocamlfuse in the command line
+# 2) Create folder for mounting at /media/akienm/GoogleDrive
+# 3) Run google-drive-ocamlfuse ~/googledrive to mount Google Drive
+# rsync $rsync_defaults_for_whole_drive_backup /media/akienm/GoogleDrive/ /media/akienm/AkiensWorld/GoogleDrive
+
+# find "$src" -type d -empty -delete
+# rsync -avxc --remove-source-files /media/akienm/NAS1/OLD/ /media/akienm/NAS2AkiensWorld/OLD/
+
+logtarget=/home/akienm/bin/AkienApps/logs/drives_backup.log
+. logger_for_bash
+copyafolder() {
+    logecho "####################################################################################################"
+    logecho "Performing archive copy from $source to $target"
+    compelte_command="rsync $rsync_parameters $source $target"
+    if [ "$dry_run" == "True" ]  ; then
+        logecho "drives_backup DRY RUN: ${compelte_command}"
+        logecho "result_code=0"
+    else
+        if [ -e "$source" ] ; then
+            if [ -e "$target" ] ; then
+                logcmd $compelte_command
+            else
+                logecho "ERROR: DESTINATION FAILURE: $target was not found"
+            fi
+        else
+            logecho "ERROR: SOURCE FAILURE: $source was not found"
+        fi
+    fi
+    logecho "####################################################################################################"
+    logecho ""
+}
+
+logecho "Starting full drives backup"
+
+dry_run=False
+
+####################################################################################################
+# update onedrive first
+if [ "$dry_run" == "True" ]  ; then
+    logecho "drives_backup DRY RUN: onedrive --sync --verbose"
+else
+    logcmd onedrive --sync --verbose
+    logcmd onedrive --monitor &
+fi
+
+if [ "1."=="2." ] ; then
+    rsync_parameters="-avx --delete "
+    source=/media/akienm/AkiensWorld/
+    target=/media/akienm/NAS/
+    copyafolder
+
+    ####################################################################################################
+    # This group migrates from AkiensWorld.bak drive to the smaller drives
+    # Purpose of that is so we have 2 versioned backups. Gives us
+    # a better chance of recovery if there's an issue. The error
+    # won't automagically propogate to all the backup devices
+
+    source=/media/akienm/AkiensWorld.bak/Porn/
+    target=/media/akienm/1TBUSBSSD1/
+    copyafolder
+
+    source=/media/akienm/AkiensWorld.bak/Dev/
+    target=/media/akienm/1TBUSBSSD1/
+    copyafolder
+
+    source=/media/akienm/AkiensWorld.bak/Ebooks/
+    target=/media/akienm/1TBUSBSSD1/
+    copyafolder
+
+    source=/media/akienm/AkiensWorld.bak/Fonts/
+    target=/media/akienm/1TBUSBSSD1/
+    copyafolder
+
+    source=/media/akienm/AkiensWorld.bak/GoogleDrive/
+    target=/media/akienm/1TBUSBSSD1/
+    copyafolder
+
+    source=/media/akienm/AkiensWorld.bak/Music/
+    target=/media/akienm/1TBUSBSSD1/
+    copyafolder
+
+    source=/media/akienm/AkiensWorld.bak/MusicRelated/
+    target=/media/akienm/1TBUSBSSD1/
+    copyafolder
+
+    source=/media/akienm/AkiensWorld.bak/OneDrive/
+    target=/media/akienm/1TBUSBSSD1/
+    copyafolder
+
+    source=/media/akienm/AkiensWorld.bak/People/
+    target=/media/akienm/1TBUSBSSD1/
+    copyafolder
+
+    source=/media/akienm/AkiensWorld.bak/Pictures/
+    target=/media/akienm/1TBUSBSSD1/
+    copyafolder
+
+    source=/media/akienm/AkiensWorld.bak/WindowsProvisioning/
+    target=/media/akienm/1TBUSBSSD1/
+    copyafolder
+
+    ####################################################################################################
+    # AkiensWorld.Video on 1TBUSBSSD2
+    source=/media/akienm/AkiensWorld.bak/Video/
+    target=/media/akienm/1TBUSBSSD2/
+    copyafolder
+
+    ####################################################################################################
+    # AkiensWorld done after the above so those get the second backup mentioned above.
+    source=/media/akienm/AkiensWorld/
+    target=/media/akienm/AkiensWorld.bak/
+    copyafolder
+
+    ####################################################################################################
+    # Boot drive kubuntu_2404
+    source=/
+    target=/media/akienm/kubuntu_2404.bak/
+    rsync_parameters='-avx --delete --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found/*"}'
+    copyafolder
+
+    ####################################################################################################
+fi
+logecho "Done"

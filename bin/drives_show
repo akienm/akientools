@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Get ready
+let counter=1 ; let new_counter=1
+
+# We send this to a file to only do it once, cuz it's slow
+df -h > ~/bin/.temp/dfout${counter}.txt
+
+# Show header
+echo ""
+echo "Local drive contents as of $(date +%T)"
+cat ~/bin/.temp/dfout${counter}.txt | grep "Size "
+
+# Take out df header
+let counter=$new_counter ; let "new_counter++"
+cat ~/bin/.temp/dfout${counter}.txt | grep -v "Size " > ~/bin/.temp/dfout${new_counter}.txt
+
+# Take out /dev/shm
+let counter=$new_counter ; let "new_counter++"
+cat ~/bin/.temp/dfout${counter}.txt | grep -v "/dev/shm" > ~/bin/.temp/dfout${new_counter}.txt
+
+# Take out all the /run stuff
+let counter=$new_counter ; let "new_counter++"
+cat ~/bin/.temp/dfout${counter}.txt | grep -v "/run" > ~/bin/.temp/dfout${new_counter}.txt
+
+# Take out all the /boot/efi stuff
+let counter=$new_counter ; let "new_counter++"
+cat ~/bin/.temp/dfout${counter}.txt | grep -v "/boot/efi" > ~/bin/.temp/dfout${new_counter}.txt
+
+# Take out all the /sys/firmware stuff
+let counter=$new_counter ; let "new_counter++"
+cat ~/bin/.temp/dfout${counter}.txt | grep -v "/sys/firmware" > ~/bin/.temp/dfout${new_counter}.txt
+
+# Take out all the /tmp stuff
+let counter=$new_counter ; let "new_counter++"
+cat ~/bin/.temp/dfout${counter}.txt | grep -v "/tmp" > ~/bin/.temp/dfout${new_counter}.txt
+
+#let counter=$new_counter ; let "new_counter++"
+#cat ~/bin/.temp/dfout${counter}.txt | sed 's/$/  (kubuntu_2404)/' > ~/bin/.temp/dfout${new_counter}.txt
+
+# Finally sort to console
+cat ~/bin/.temp/dfout${new_counter}.txt | sort -k 6
+
+# Cleanup
+rm ~/bin/.temp/dfout*.txt
+
+# And make it pretty
+echo ""

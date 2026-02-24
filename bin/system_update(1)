@@ -1,0 +1,69 @@
+#!/bin/bash
+# system_update shell script with extended functionality
+# bin=/media/akienm/OneDrive/AkiensWorkshop/dev/src/bin
+cd /media/akienm/OneDrive/AkiensWorkshop/dev/src/bin/AkienApps/logs/
+logtarget=/media/akienm/OneDrive/AkiensWorkshop/dev/src/bin/AkienApps/logs/system_update.log
+. /media/akienm/OneDrive/AkiensWorkshop/dev/src/bin/logger_for_bash
+
+logecho "Starting system_update"
+logecho "This will perform updates, upgrades, autoremoves, and so on"
+
+# Check for Raspberry Pi-specific actions
+uname -a | grep "rpt-rpi" > /dev/null
+result_code=$?
+if [ $result_code -eq 0 ]; then
+    logcmd pi-apps
+fi
+
+# Handle APT updates
+logcmd sudo rm -rf /var/lib/dpkg/lock-frontend
+logcmd sudo rm -rf /var/lib/dpkg/lock
+logcmd sudo apt-get update
+logcmd sudo apt-get upgrade -y
+logcmd sudo apt-get full-upgrade -y
+logcmd sudo apt-get dist-upgrade -y
+logcmd sudo apt-get autoremove -y
+logcmd sudo apt-get autoclean -y
+
+# Handle Flatpak updates
+if command -v flatpak >/dev/null 2>&1; then
+    logecho "Updating Flatpak applications..."
+    logcmd sudo flatpak update -y
+else
+    logecho "Flatpak is not installed. Skipping."
+fi
+
+# Handle Snap updates
+if command -v snap >/dev/null 2>&1; then
+    logecho "Updating Snap packages..."
+    logcmd sudo snap refresh
+else
+    logecho "Snap is not installed. Skipping."
+fi
+
+# Handle AppImage updates
+APPIMAGE_DIR="$HOME/Applications" # Adjust to where your AppImages are stored
+if [ -d "$APPIMAGE_DIR" ]; then
+    logecho "Checking for AppImage updates in $APPIMAGE_DIR..."
+    for appimage in "$APPIMAGE_DIR"/*.AppImage; do
+        if [ -f "$appimage" ]; then
+            logecho "Checking updates for $appimage..."
+            logcmd appimageupdate "$appimage" || logecho "No updates found for $appimage or update failed."
+        fi
+    done
+else
+    logecho "No AppImage directory found at $APPIMAGE_DIR. Skipping."
+fi
+
+# Check if a reboot is required
+if [ -f /var/run/reboot-required ]; then
+    logecho "System requires a reboot."
+    read -rp "Press Enter to reboot now or Ctrl+C to cancel..."
+    logecho "Rebooting now..."
+    logcmd sudo reboot
+else
+    logecho "No reboot required."
+fi
+
+logecho "-----Done-----"
+logecho ""

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Unit test script for logcmd
+export logtarget="/home/akienm/bin/AkienApps/logs/testme.log"
+. logcmd -n
+. logcmd echo "\"Starting testme\""
+. logcmd rsync_defaults_for_whole_drive_backup="\"--acls --archive --delete-before --executability --human-readable --one-file-system --verbose --verbose --xattrs\""
+
+echo testing rsync_defaults_for_whole_drive_backup  2>&1 | tee -a ${logtarget}
+echo rsync_defaults_for_whole_drive_backup=$rsync_defaults_for_whole_drive_backup   2>&1 | tee -a ${logtarget}
+
+if [ -z "$rsync_defaults_for_whole_drive_backup" ]; then
+    echo "TESTME....: FAILED"
+else
+    echo "TESTME....: SUCCESS: rsync_defaults_for_whole_drive_backup is set to '$rsync_defaults_for_whole_drive_backup'"
+fi

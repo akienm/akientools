@@ -1,0 +1,34 @@
+#!/bin/bash
+
+SUDOERS_FILE="/etc/sudoers.d/backup_update_nopasswd"
+if [[ -f "$SUDOERS_FILE" ]]; then
+  echo "$SUDOERS_FILE already exists. No changes made."
+else
+    # Define the paths to your backup and update scripts
+    BACKUP_SCRIPT="/path/to/drives_backup"
+    UPDATE_SCRIPT="/path/to/system_update"
+
+    # Define the cron schedule for running the scripts (e.g., every night at 2:00 AM)
+    CRON_SCHEDULE="0 2 * * *"
+
+    # Add sudoers entries to allow these scripts to run without password prompt
+    echo "Adding sudoers entries for drives_backup and system_update..."
+    echo -e "me ALL=(ALL) NOPASSWD: $BACKUP_SCRIPT\nme ALL=(ALL) NOPASSWD: $UPDATE_SCRIPT" | sudo tee "${SUDOERS_FILE}"
+
+    # Confirm sudoers entry was added
+    if [ $? -eq 0 ]; then
+        echo "Sudoers entry added successfully."
+    else
+        echo "Failed to add sudoers entry. Please check "${SUDOERS_FILE}" manually."
+        exit 1
+    fi
+
+    # Create cron jobs for each script
+    echo "Setting up cron jobs..."
+    (crontab -l 2>/dev/null; echo "$CRON_SCHEDULE sudo $BACKUP_SCRIPT") | crontab -
+    (crontab -l 2>/dev/null; echo "$CRON_SCHEDULE sudo $UPDATE_SCRIPT") | crontab -
+
+    echo "Cron jobs have been set up to run at $CRON_SCHEDULE each night."
+fi
+echo ""
+echo Done.

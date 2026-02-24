@@ -1,0 +1,27 @@
+#!/bin/bash
+# --acls              - Preserve ACL
+# --archive           - Archive. This is equivalent to -rlptgoD
+# --delete-before     - kinda self explanitory
+# --executability     - Preserve Executability
+# --human-readable    -
+# --one-file-system   - Don't cross file system boundaries
+# --verbose --verbose - By default, rsync works silently. A single -v will give you information about what
+#                       files are being transferred and a brief summary at the end. Two -v options will
+#                       give you information on what files are being skipped and slightly more information
+#                       at the end.
+# --xattrs            - Preserve extended attributes
+
+# /run/user/1000/kio-fuse-qSouPY/smb/akienm%40gmail.com@10.0.0.99/OneDrive
+# smb://akienm%40gmail.com@10.0.0.99/OneDrive/
+# /media/akienm/AkiensWorld/OneDrive
+
+# rsync --acls --archive --delete-before --executability --human-readable --one-file-system --verbose --verbose --xattrs /run/user/1000/kio-fuse-qSouPY/smb/akienm%40gmail.com@10.0.0.99/OneDrive/ /media/akienm/AkiensWorld/OneDrive
+
+# /run/user/1000/kio-fuse-qSouPY/smb/akienm%40gmail.com@10.0.0.99/GoogleDrive
+# smb://akienm%40gmail.com@10.0.0.99/GoogleDrive/
+# /media/akienm/AkiensWorld/GoogleDrive
+
+# rsync --acls --archive --delete-before --executability --human-readable --one-file-system --verbose --verbose --xattrs /run/user/1000/kio-fuse-qSouPY/smb/akienm%40gmail.com@10.0.0.99/GoogleDrive/ /media/akienm/AkiensWorld/GoogleDrive
+
+onedrive --synchronize --verbose
+

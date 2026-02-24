@@ -1,0 +1,19 @@
+#!/bin/bash
+
+echo "Killing onedrive..."
+max_retries=5
+count=0
+
+while pgrep -x onedrive > /dev/null && [ "$count" -lt "$max_retries" ]; do
+    echo "Killing onedrive (attempt $((count+1)))"
+    pkill -x onedrive
+    sleep 2
+    count=$((count + 1))
+done
+echo "The task onedrive is no longer running"
+sleep 1
+echo "Starting onedrive..."
+onedrive --download-only --monitor &
+echo "Waiting..."
+sleep 1
+echo "Bye!"

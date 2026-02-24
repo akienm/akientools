@@ -1,0 +1,26 @@
+#!/bin/bash
+echo "working, please stand by..."
+cd /media/akienm/NAS2/
+# sudo chown -Rv $USER:$USER .
+# chmod -R a+rw .
+# find . -type d -empty -delete
+
+cd /media/akienm/NAS2AkiensWorld/
+# sudo chown -Rv $USER:$USER .
+# chmod -R a+rw .
+# find . -type d -empty -delete
+
+cd /media/akienm/NAS1/
+# sudo chown -Rv $USER:$USER .
+# chmod -R a+rw .
+rsync -avxc --remove-source-files /media/akienm/NAS1/OLD/ /media/akienm/NAS2/OLD/
+cd /media/akienm/NAS1/VIDEO
+find . -type d -empty -delete
+rsync -avxc --remove-source-files /media/akienm/NAS1/VIDEO/ /media/akienm/NAS2/OLD/VIDEO/
+
+cd /media/akienm/NAS1AkiensWorld.bak/
+# sudo chown -Rv $USER:$USER .
+# chmod -R a+rw .
+# find . -type d -empty -delete
+# rsync -avxc --remove-source-files /media/akienm/NAS1AkiensWorld.bak/OLD/ /media/akienm/NAS2/OLD/
+

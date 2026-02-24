@@ -1,0 +1,13 @@
+#!/bin/bash
+echo /media/akienm/NAS${1}/
+echo /media/akienm/NAS${1}AkiensWorld${2}/
+read -n 1 -s -r -p "Press any key to continue..."
+ehco ""
+echo "working, please stand by..."
+cd /media/akienm/NAS${1}/
+# sudo chown -Rv $USER:$USER .
+# chmod -R a+rw .
+cd /media/akienm/NAS${1}AkiensWorld${2}/
+sudo chown -Rv $USER:$USER .
+chmod -R a+rw .
+#find /media/akienm/NAS2 -type d -empty -delete

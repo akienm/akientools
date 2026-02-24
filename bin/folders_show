@@ -1,0 +1,7 @@
+#!/bin/bash
+# Show folder sizes
+folder=$1
+if [ ":$1" == ":" ] ; then
+    folder=.
+fi
+du -h --max-depth=1 "$folder"
