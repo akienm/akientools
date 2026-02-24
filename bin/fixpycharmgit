@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+cd ~/src/test-common
+git remote prune origin
+git fetch -p
+cd ~/src/test-framework
+git remote prune origin
+git fetch -p

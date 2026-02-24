@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+result=$(getgitbranch)
+if [ -n "${result}" ] ; then
+    message="$1 $2 $3 $4 $5"
+    if [ -z "${message}" ] ; then
+        echo "no commint message"
+        echo "nothing done"
+        echo "aborted"
+    else
+        echo "git commit -a -m \"${message}\" && git pull && gitpush \"${result}\""
+        name="./$$.log"
+        git commit -a -m "${message}" | tee "${name}"
+        cat "${name}" | grep  ".py:" > /dev/null 2>&1
+        test $? && git pull && gitpush "${result}"
+        rm "${name}"
+    fi
+fi

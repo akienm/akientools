@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+
+# Everyone needs a little color in their lives
+
+################################################################################
+# hook it all up
+if [ ! ":${PROMPT_COMMAND}" == ":set_prompt_caller" ] ; then
+    if [ -f "${WORKSPACE}/framework/user/setprompt" ] ; then
+        export _setpromptcommandfile="${WORKSPACE}/framework/user/setprompt"
+    else
+        export _setpromptcommandfile="${WORKSPACE}/src/test-framework/testframework/bin/module.prompt"
+    fi
+
+    if [ ! ":${PROMPT_COMMAND}" == ":set_prompt_caller" ] ; then
+        if [ ":${DOCKER_CONTAINER}" == ":True" ] ; then
+            function set_prompt_caller() {
+                rc=$?
+                test "${rc}" -ne "0" && echo "(rc=${rc})"
+                source processenvironmentchanges
+                source $_setpromptcommandfile
+            }
+        else
+            set | grep "iterm2_preexec_invoke_cmd ()" > /dev/null
+            rc=$?
+            if [ ":${rc}" == ":0" ] ; then
+                function set_prompt_caller() {
+                    rc=$?
+                    test "${rc}" -ne "0" && echo "(rc=${rc})"
+                    iterm2_preexec_invoke_cmd
+                    source $_setpromptcommandfile
+                }
+            else
+                function set_prompt_caller() {
+                    rc=$?
+                    test "${rc}" -ne "0" && echo "(rc=${rc})"
+                    source $_setpromptcommandfile
+                }
+            fi
+        fi
+        export -f set_prompt_caller
+        export PROMPT_COMMAND=set_prompt_caller
+    fi
+fi
+
+# unless we just changed this, it will always eval as true
+if [ "${_setpromptcommandfile}" == "${WORKSPACE}/src/test-framework/testframework/bin/module.prompt" ] ; then
+
+    ################################################################################
+    # set up the data
+    if [ -n "${VIRTUAL_ENV}" ] ; then
+        virtualenv_data=$(basename $VIRTUAL_ENV)
+    else
+        unset virtualenv_data
+    fi
+
+    # this is to help deal with branch changes. git can replace a directory tree during that
+    # and if it does so, the inode for the directory we were on can be rendered invalid. this
+    # hack works as long as the same folder name still exists.
+    path_data="$(dirs +0)"
+    cd ${QETA_SRC}
+    cd "${path_data//\~/$QETA_HOME}" > /dev/null 2>&1
+
+    timestamp_data="$(date '+%a, %b %d %Y %H:%M:%S')"
+    timestamp_data_ampm="$(date '+%a, %b %d %Y %r')"
+    user_data=$USER
+    host_data=$(hostname -s)
+    prompt_data='$'
+
+    dirty_data=""
+    branch_data=$(${QETA_BIN}/getgitbranch)
+
+    if [ -z "${branch_data}" ] ; then
+        dirty_data=""
+    else
+        # this right here is why this takes so long :(
+        dirty_data=$(${QETA_BIN}/getgitdirty)
+        if [ ":${dirty_data}" == ":Unknown" ] ; then
+            dirty_data=""
+        else
+            if [ ":${dirty_data}" == ":True" ] ; then
+                dirty_data="dirty"
+            else
+                dirty_data="clean"
+            fi
+        fi
+        repo_info=$(basename `git rev-parse --show-toplevel`)
+    fi
+
+    ################################################################################
+    # define colors
+    source "${QETA_SRC}/test-framework/testframework/extras/colors/predefined_colors"
+
+    ################################################################################
+    # map colors to data
+    # default colors
+
+    if [ ":${QETA_COLORS}" == ":" ] ; then
+        export QETA_COLORS=dark
+    fi
+
+    test -z "${QETA_COLORTERM}" && export QETA_COLORTERM="256"
+    test "${COLORTERM}" = "truecolor" && export QETA_COLORTERM="24m"
+
+    # remove the suffix
+    QETA_COLORS="${QETA_COLORS/24m/${QETA_COLORTERM}}"
+    QETA_COLORS="${QETA_COLORS/256/${QETA_COLORTERM}}"
+    # and add back the right one
+    test -f "${QETA_SRC}/test-framework/testframework/extras/colors/${QETA_COLORS}${QETA_COLORTERM}" && export QETA_COLORS="${QETA_COLORS}${QETA_COLORTERM}"
+
+    if [ ! -f "${QETA_COLORS}" ] ; then
+        if [ ! -f "${QETA_SRC}/test-framework/testframework/extras/colors/${QETA_COLORS}" ] ; then
+            echo "could not find:"
+            echo " - ${QETA_COLORS}"
+            echo " - ${QETA_SRC}/test-framework/testframework/extras/colors/${QETA_COLORS}"
+            echo "revering to solar256"
+            export QETA_COLORS="solar256"
+        fi
+    fi
+
+    echo "${QETA_COLORS}" | grep "/" > /dev/null
+    if [ ":$?" == ":0" ] ; then
+        source "${QETA_COLORS}"
+    else
+        source "${QETA_SRC}/test-framework/testframework/extras/colors/${QETA_COLORS}"
+    fi
+
+    ################################################################################
+    # now paint the arrangement
+
+    if [ ":${QETA_PROMPT}" == ":" ] ; then
+        export QETA_PROMPT=default
+    fi
+    if [ -f "${QETA_SRC}/test-framework/testframework/extras/prompts/${QETA_PROMPT}" ] ; then
+        export QETA_PROMPT="${QETA_SRC}/test-framework/testframework/extras/prompts/${QETA_PROMPT}"
+    fi
+    source "${QETA_PROMPT}"
+fi

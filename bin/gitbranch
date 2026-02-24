@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+################################################################################
+# module:
+#   gitbranch
+#
+# purpose:
+#   akiens lazy tool for creating a branch.
+#
+# arguments:
+#   none = display branches
+#   $1 alone = new branch name off current branch
+#   $1 with $2 =
+#       $1 = parent branch
+#       $2 = new branch name
+#
+# returns:
+#   whatever git returns
+#
+# dependencies:
+#   git
+#
+################################################################################
+
+if [ -z "${1}" ] ; then
+   git branch
+   exit 0
+fi
+
+target=$1
+parent=master
+
+if [ -n "${2}" ] ; then
+    target=$2
+    parent=$1
+fi
+
+git checkout ${parent}
+git pull
+git branch ${target}
+git checkout ${target}
+git branch --set-upstream-to origin/${target}

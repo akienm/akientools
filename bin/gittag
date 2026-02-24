@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+echo "gittag tag_number branch_name commit_message_in_quotes"
+echo "gittag ${1} ${2} ${3}"
+echo "This will create tag ${1} for branch ${2}"
+echo "With commit message: ${3}"
+echo "Press ^C if this is not correct... Or"
+read -n 1 -s -p "Press any key to continue... "
+git tag -d ${1}
+git push origin :refs/tags/${1}
+git commit -a -m "${3}"
+git tag ${1}
+git push origin ${2}
+git push --tags
+python setup.py sdist bdist_wheel upload -r techshed

@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+################################################################################
+# Module:
+#   flake8
+#
+# Purpose:
+#   runs flake8 with our exclusions
+#
+# Arguments:
+#   - -v verbose, optional, off by default
+#   - filespec to test
+#
+#
+# Returns:
+#   flake8 output to console
+#
+# Notes:
+#   - attempts to install flake8 if it isn't already
+#   - uses ruleset that the team determined were optimal
+#
+#   These are the codes included in the command line below
+#   Listing both the code and it's function
+#
+#   E265 = 1 of 2 to allow comment lines of 80 * '#'
+#   E266 = 2 of 2 to allow comment lines of 80 * '#'
+#   E402 = module level import not at top of file
+#   E501 = Line length limited to 80 chars
+#   W503 = line break before binary operator
+#
+################################################################################
+
+PATH=$PATH:/usr/local/bin
+
+python3 -m pip install flake8 > /dev/null
+
+if [ "$1" == "-v" ] ; then
+    echo "$ python3 -m flake8 --max-line-length=100 --ignore=E265,E266,E402,E501,W503 $@"
+    shift
+fi
+python3 -m flake8 --max-line-length=100 --ignore=E265,E266,E402,E501,W503 $@
+echo Done

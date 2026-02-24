@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+################################################################################
+# Module:
+#   getgitstatus
+#
+# Purpose:
+#   returns string of git statuses
+#
+# Arguments:
+#   none
+#
+# Returns:
+#
+# Dependencies:
+#   function contains
+#
+################################################################################
+
+
+
+function CommitStatus() {
+    A="A"
+    U="U"
+    M="M"  # modified
+    D="D"
+    R="R"
+    C="C"
+    G="G"
+    X="X"
+    git status -s --porcelain | while read -r line; do
+        if [[ $line == A* ]]; then
+            echo -n "$A"
+            A=""
+        #elif [[ $line == \?\?* ]]; then
+        #    echo -n "$U"
+        #    U=""
+        elif [[ $line == M* ]]; then
+            echo -n "$M"
+            M=""
+        elif [[ $line == D* ]]; then
+            echo -n "$D"
+            D=""
+        elif [[ $line == R* ]]; then
+            echo -n "$R"
+            R=""
+        elif [[ $line == C* ]]; then
+            echo -n "$C"
+            C=""
+        elif [[ $line == U* ]]; then
+            echo -n "$G"
+            G=""
+        #else
+        #    echo -n "$X"
+        #    X=""
+        fi
+    done
+}
+
+echo $(CommitStatus)

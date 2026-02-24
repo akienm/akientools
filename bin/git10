@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+################################################################################
+# module:
+#   git10
+#
+# purpose:
+#   akiens lazy tool for displaying the last 10 commits
+#
+# arguments:
+#   none
+#
+# returns:
+#   whatever git returns
+#
+# dependencies:
+#   git
+#
+################################################################################
+
+git log --pretty=oneline -10

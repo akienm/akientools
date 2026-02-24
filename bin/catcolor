@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+################################################################################
+# Module:
+#   catcolor
+#
+# Purpose:
+#   shows the contents of a color file
+#
+# Arguments:
+#   $1 string name of the set file to find.
+#
+# Returns:
+#   displays contents to console
+#
+# Raises:
+#   if not found, displays nothing
+#
+################################################################################
+
+cat "${QETA_SRC}/test-framework/testframework/extras/colors/${1}"

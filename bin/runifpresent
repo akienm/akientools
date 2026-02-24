@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+run_if_present_target="${1}"
+shift
+
+if [ -f "${run_if_present_target}" ] ; then
+    if [ "${1}" == "-v" ] ; then
+        echo "running $run_if_present_target"
+    fi
+    "${run_if_present_target}" $@
+fi
+
+if [ -d  "${run_if_present_target}" ] ; then
+    directory_entries=$(ls "${run_if_present_target}")
+
+    for entry in $directory_entries; do
+        if [ "${1}" == "-v" ] ; then
+            echo "running ${run_if_present_target}/${entry}"
+        fi
+        "${run_if_present_target}/${entry}"
+    done
+fi

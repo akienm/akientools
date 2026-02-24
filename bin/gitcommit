@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+result=$(getgitbranch)
+if [ -n "${result}" ] ; then
+    if [ -z "$@" ] ; then
+        echo "no commint message"
+        echo "nothing done"
+        echo "aborted"
+    else
+        echo "git commit -a -m \"$@\""
+        git commit -a -m "$@"
+    fi
+fi

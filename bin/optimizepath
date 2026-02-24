@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+optimizepath_logfile="${QETA_FRAMEWORK}/logs/optimizepath.log"
+test -f "${optimizepath_logfile}" && rm "${optimizepath_logfile}"
+
+allitems="$@"
+
+IFS=':' read -r -a array <<< "${allitems}"
+
+new_path=""
+for file in "${array[@]}"
+do
+    if [ ! ":$file" == ":" ]
+    then
+        if [[ ":${new_path}:" == *":${file}:"* ]]
+        then
+            #TODO: why didn't this chunk work without this block being present?
+            NOP=True
+        else
+            if [ ":$new_path" == ":" ] ; then
+                new_path="$file"
+            else
+                new_path="${new_path}:${file}"
+            fi
+        fi
+    fi
+done
+
+echo "${new_path}"

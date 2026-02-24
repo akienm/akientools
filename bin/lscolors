@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+################################################################################
+# Module:
+#   lscolors
+#
+# Purpose:
+#   displays the available color files located in
+#   ${QETA_SRC}/test-framework/testframework/extras/color
+#
+# Arguments:
+#   $1 string name of the file(s) to look for
+#
+# Returns:
+#   does an ls on that folder. if an argument is specified, passes
+#   those arguments to ls
+#
+# Raises:
+#   throws an error if the specified reference cannot be found.
+#
+# Dependencies:
+#   module.sets
+#
+# Notes:
+#   most of the work happens in module.sets, which calls back to the main()
+#   in this file.
+#
+################################################################################
+
+echo "$ ls -1 ${QETA_SRC}/test-framework/testframework/extras/colors/${1}"
+ls -1 "${QETA_SRC}/test-framework/testframework/extras/colors/${1}"

@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+################################################################################
+# module:
+#   gitpush
+#
+# purpose:
+#   akiens lazy tool for pushing current branch to github
+#
+# arguments:
+#   branch name to push
+#
+# returns:
+#   whatever git returns
+#   logs to ~/framework/logs
+#
+# raises:
+#   displays error if the branchname provided doesn't match the currrent
+#   branch name (for safety. is unneeded? don't know.)
+#
+# dependencies:
+#   git
+#   module.logging
+#
+################################################################################
+
+source module.logging -q
+
+arg1=$1
+shift
+arg2=$1
+shift
+
+if [ -n "${arg2}" ] ; then
+    switches="${arg1}"
+    branch="${arg2}"
+else
+    branch="${arg1}"
+fi
+
+actual_branch=$(getgitbranch)
+if [ "${actual_branch}" == "${branch}" ] ; then
+    git push $switches origin $branch $@
+    git pull
+else
+    message=""
+    message+="branches didn't match!\n"
+    message+="you're on ${actual_branch}\n"
+    message+="but you asked to push ${branch}"
+    message+="\n\n"
+    message+="akien won't let me"
+    qlog fatal "${message}"
+fi

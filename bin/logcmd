@@ -6,6 +6,29 @@
 #
 # To use:
 #   set logtarget
+#   then preface each command in your bash file with . logcmd
+#   does not yet have a quiet mode
+#   does not yet have more than 2, hardwired subscribers, facilitated with tee
+#   does not yet have real time log availability via the console, but coming...
+#       probably using this or something similar: tail -f "${logtarget}" &
+#
+# Example: This is the unit test used, script called: testme
+#  #!/bin/bash
+#
+#  # Unit test script for logcmd
+#  export logtarget="${HOME}/testme.log"
+#  . logcmd -n
+#  . logcmd echo "\"Starting testme\""
+#  . logcmd rsync_defaults_for_whole_drive_backup="\"--acls --archive --delete-before --executability --human-readable --one-file-system --verbose --verbose --xattrs\""
+#
+#  echo testing rsync_defaults_for_whole_drive_backup  2>&1 | tee -a ${logtarget}
+#  echo rsync_defaults_for_whole_drive_backup=$rsync_defaults_for_whole_drive_backup   2>&1 | tee -a ${logtarget}
+#
+#  if [ -z "$rsync_defaults_for_whole_drive_backup" ]; then
+#      echo "TESTME....: FAILED: rsync_defaults_for_whole_drive_backup is set INCORRECTLY to '$rsync_defaults_for_whole_drive_backup'""
+#  else
+#      echo "TESTME....: SUCCESS: rsync_defaults_for_whole_drive_backup is set CORRECTLY to '$rsync_defaults_for_whole_drive_backup'"
+#  fi
 
 
 # Set the default log file location if logtarget is not set
@@ -38,16 +61,17 @@ if [ ! ":${command_line}" == ":" ] ; then
     echo "$(timestamp) \$ ${command_line}" | tee -a "${logtarget}"
 
     # Execute the command and redirect both stdout and stderr to the log file
+    # We have to do it this way because using tee fails no matter what else we do.
     eval "$command_line" > "${contarget}" 2>&1
 
     # Capture the result code of the command
     result_code=$?
 
     # Check if the log file has content and display it line by line
-    #while IFS= read -r line; do
-    #    echo "$line"
-    #done < "${logtarget}"
     cat "${contarget}" | tee -a "${logtarget}"
+
+    # Now remove it
+    rm -f /tmp/contarget.log
 
     # Log the result code
     echo "$(timestamp) \$ result_code=$result_code" | tee -a "${logtarget}"

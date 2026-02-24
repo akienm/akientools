@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+################################################################################
+# Module:
+#   getgitbranch
+#
+# Purpose:
+#   if you're in a folder that's a gitrepo, returns the name of the active
+#   branch. called from many scripts.
+#
+# Arguments:
+#   none
+#
+# Returns:
+#   the branch or nothing
+#
+# Dependencies:
+#   git
+#
+################################################################################
+
+branch=$(git symbolic-ref HEAD 2>/dev/null)
+if [ ! "$?" == 128 ] ; then
+    branch=${branch#refs/heads/} # apparently faster than sed
+    echo $branch
+fi

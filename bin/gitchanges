@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+################################################################################
+# module:
+#   gitchanges
+#
+# purpose:
+#   akiens lazy tool for showing changes vs master
+#
+# arguments:
+#   none
+#
+# returns:
+#   whatever git returns
+#
+# dependencies:
+#   git
+#
+################################################################################
+
+git diff --name-only master

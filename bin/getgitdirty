@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+################################################################################
+# Module:
+#   getgitdirty
+#
+# Purpose:
+#   returns True if in a git repo with uncomitted changes
+#
+# Arguments:
+#   none
+#
+# Returns:
+#   True, False or . (. is for beautifulmind, because inside the container,
+#                     git can take a very long time to process for such a
+#                     big repo.)
+#
+# Dependencies:
+#   function contains
+#
+################################################################################
+
+# this seems to be the fastest and most reliable way to do this
+getgitdirty_raw_result=$(git status 2>&1)
+result=""
+contains "${getgitdirty_raw_result}" "Changes not staged for commit" > /dev/null 2>&1 && result=True
+contains "${getgitdirty_raw_result}" "Changes to be committed" > /dev/null 2>&1 && result=True
+echo $result
