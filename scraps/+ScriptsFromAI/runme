@@ -1,0 +1,53 @@
+#!/bin/bash
+
+OUTPUT_FILE="/tmp/sb1095_diagnosis.log"
+
+echo "Collecting diagnostic information for SB1095..." > "$OUTPUT_FILE"
+
+# General system info
+echo "=== System Information ===" >> "$OUTPUT_FILE"
+uname -a >> "$OUTPUT_FILE"
+lsb_release -a 2>/dev/null >> "$OUTPUT_FILE"
+echo >> "$OUTPUT_FILE"
+
+# USB device information
+echo "=== USB Devices ===" >> "$OUTPUT_FILE"
+lsusb | grep -i "041e:30df" >> "$OUTPUT_FILE"
+echo >> "$OUTPUT_FILE"
+
+# Kernel modules
+echo "=== Kernel Modules (snd_usb_audio) ===" >> "$OUTPUT_FILE"
+lsmod | grep snd_usb_audio >> "$OUTPUT_FILE"
+echo >> "$OUTPUT_FILE"
+
+# ALSA devices and configurations
+echo "=== ALSA Information ===" >> "$OUTPUT_FILE"
+aplay -l >> "$OUTPUT_FILE" 2>&1
+arecord -l >> "$OUTPUT_FILE" 2>&1
+cat /proc/asound/cards >> "$OUTPUT_FILE"
+cat /proc/asound/modules >> "$OUTPUT_FILE"
+echo >> "$OUTPUT_FILE"
+
+# PulseAudio / PipeWire
+echo "=== Audio Service Status ===" >> "$OUTPUT_FILE"
+systemctl --user status pipewire.service pipewire-pulse.service 2>/dev/null >> "$OUTPUT_FILE"
+systemctl --user status pulseaudio.service pulseaudio.socket 2>/dev/null >> "$OUTPUT_FILE"
+echo >> "$OUTPUT_FILE"
+
+# Audio errors in kernel logs
+echo "=== Recent Kernel Logs (Audio) ===" >> "$OUTPUT_FILE"
+dmesg | grep -iE "usb|audio|snd" | tail -n 50 >> "$OUTPUT_FILE"
+echo >> "$OUTPUT_FILE"
+
+# Compressed summary
+echo "=== Compressed Summary ===" >> "$OUTPUT_FILE"
+cat "$OUTPUT_FILE" | gzip | base64 > "${OUTPUT_FILE}.compressed"
+echo "Compressed summary stored in ${OUTPUT_FILE}.compressed"
+
+# Print compressed result
+echo "=== Begin Compressed Diagnostic ==="
+cat "${OUTPUT_FILE}.compressed"
+echo "=== End Compressed Diagnostic ==="
+
+# Cleanup temp files
+rm -f "${OUTPUT_FILE}.compressed"
