@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # File to save output
-output_file="/home/akienm/audio_device_check_output.txt"
+output_file="$HOME/audio_device_check_output.txt"
 
 # Collect output of relevant commands
 echo "Running 'pactl list cards'..." >> "$output_file"
@@ -21,9 +21,9 @@ pw-cli ls Node >> "$output_file"
 echo "" >> "$output_file"
 
 # Compress the output file
-tar -czf /home/akienm/audio_device_check_output.tar.gz -C /home/akienm audio_device_check_output.txt
+tar -czf $HOME/audio_device_check_output.tar.gz -C $HOME audio_device_check_output.txt
 
 # Provide the location of the compressed file
-echo "Output saved and compressed as /home/akienm/audio_device_check_output.tar.gz"
-cat /home/akienm/audio_device_check_output.tar.gz
+echo "Output saved and compressed as $HOME/audio_device_check_output.tar.gz"
+cat $HOME/audio_device_check_output.tar.gz
 echo ""

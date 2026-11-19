@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Define the directories
-FIRST_DIR="/media/akienm/AkiensWorld/AudioByCategory/Music"
-SECOND_DIR="/media/akienm/AkiensWorld/AudioByCategory/MUSIC-SORTUS/MUSIC-OLD-SORTUS"
+FIRST_DIR="/media/${SUDO_USER:-$USER}/AkiensWorld/AudioByCategory/Music"
+SECOND_DIR="/media/${SUDO_USER:-$USER}/AkiensWorld/AudioByCategory/MUSIC-SORTUS/MUSIC-OLD-SORTUS"
 
 # Dry run mode: set to 1 for a dry run, where no actual overwrites or deletions occur
 DRY_RUN=0  # Set to 0 to perform actual operations

@@ -4,10 +4,10 @@ timestamp() {
     date +"%Y-%m-%d.%H:%M:%S.%4N"
 }
 
-logtarget=/home/akienm/bin/AkienApps/logs/drives_restore_direct.log
+logtarget=${AKIENTOOLS_LOGS:-$HOME/.local/state/akientools/logs}/drives_restore_direct.log
 echo "" > $logtarget  2>&1 | tee -a "${logtarget}"
 echo "$(timestamp) Starting full drives backup"  2>&1 | tee -a "${logtarget}"
 
-rsync --acls --archive --delete-before --executability --human-readable --one-file-system --verbose --verbose --xattrs /media/akienm/1TBUSBSSD2/* /media/akienm/AkiensWorld  2>&1 | tee -a "${logtarget}"
+rsync --acls --archive --delete-before --executability --human-readable --one-file-system --verbose --verbose --xattrs /media/${SUDO_USER:-$USER}/1TBUSBSSD2/* /media/${SUDO_USER:-$USER}/AkiensWorld  2>&1 | tee -a "${logtarget}"
 
-rsync --acls --archive --delete-before --executability --human-readable --one-file-system --verbose --verbose --xattrs /media/akienm/1TBUSBSSD1/* /media/akienm/AkiensWorld  2>&1 | tee -a "${logtarget}"
+rsync --acls --archive --delete-before --executability --human-readable --one-file-system --verbose --verbose --xattrs /media/${SUDO_USER:-$USER}/1TBUSBSSD1/* /media/${SUDO_USER:-$USER}/AkiensWorld  2>&1 | tee -a "${logtarget}"

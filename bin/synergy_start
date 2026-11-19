@@ -10,6 +10,6 @@ echo "Starting synergy..."
 synergyc --name akienasus --yscroll 30 10.0.0.99 &
 echo "Waiting..."
 sleep 1
-# synergys  --address 10.0.0.99  --config /home/akienm/bin/AkienApps/synergy/default.config  --name akienasus --restart --daemon &
+# synergys  --address 10.0.0.99  --config $HOME/bin/AkienApps/synergy/default.config  --name akienasus --restart --daemon &
 # /usr/bin/synergy &
 echo "Bye!"

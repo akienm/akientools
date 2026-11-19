@@ -2,7 +2,7 @@
 
 # Diagnose SoundBlaster USB Audio Issues - Filtered Version
 
-LOGFILE="/home/akienm/bin/audio_diagnosis_filtered.log"
+LOGFILE="$HOME/bin/audio_diagnosis_filtered.log"
 
 echo "Audio Diagnosis Log - $(date)" > "$LOGFILE"
 echo "----------------------------------------" >> "$LOGFILE"

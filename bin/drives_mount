@@ -6,7 +6,7 @@ common_options="credentials=/etc/smb-credentials,uid=1000,gid=1000"
 
 # Mount //10.0.0.11/public
 # source1="//10.0.0.11/public"
-# target1="/media/akienm/NAS2"
+# target1="/media/${SUDO_USER:-$USER}/NAS2"
 # if [ ! -d "$target1" ]; then
 #   echo "Creating mount point: $target1"
 #   sudo mkdir -p "$target1"
@@ -53,10 +53,10 @@ attemptmount() {
 
 # Mount //10.0.0.11/AkiensWorld
 source2="//10.0.0.11/AkiensWorld"
-target2="/media/akienm/AkiensWorld"
+target2="/media/${SUDO_USER:-$USER}/AkiensWorld"
 attemptmount
 
 # Mount //10.0.0.12/AkiensWorld.bak
 source4="//10.0.0.12/AkiensWorld.bak"
-target4="/media/akienm/AkiensWorld.bak"
+target4="/media/${SUDO_USER:-$USER}/AkiensWorld.bak"
 # attemptmount

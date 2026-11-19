@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Paths
-BACKUP_BASE="/media/akienm/1TBUSBSSD1"
-MOUNT_BASE="/media/akienm"
+BACKUP_BASE="/media/${SUDO_USER:-$USER}/1TBUSBSSD1"
+MOUNT_BASE="/media/${SUDO_USER:-$USER}"
 DISK="/dev/sdb"
 
 # Partition mount points

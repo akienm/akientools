@@ -1,10 +1,9 @@
 #!/bin/bash
 # system_update shell script with extended functionality
-# bin=/media/akienm/OneDrive/AkiensWorkshop/dev/src/bin
-cd /media/akienm/OneDrive/AkiensWorkshop/dev/src/bin/AkienApps/logs/
-logtarget=/media/akienm/OneDrive/AkiensWorkshop/dev/src/bin/AkienApps/logs/system_update.log
-. /media/akienm/OneDrive/AkiensWorkshop/dev/src/bin/logger_for_bash
-
+# Paths are relative to this script; logs go to $AKIENTOOLS_LOGS (default ~/.local/state/akientools/logs).
+bin="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+logtarget="${AKIENTOOLS_LOGS:-$HOME/.local/state/akientools/logs}/system_update.log"
+. "$bin/logger_for_bash"
 logecho "Starting system_update"
 logecho "This will perform updates, upgrades, autoremoves, and so on"
 

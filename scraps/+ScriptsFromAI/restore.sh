@@ -1,7 +1,7 @@
 #!/bin/bash
 # Paths
 OLD_DRIVE="/dev/sdb"                        # Source drive
-TEMP_DRIVE_PATH="/media/akienm/1TBUSBSSD1"  # Temporary storage path
+TEMP_DRIVE_PATH="/media/${SUDO_USER:-$USER}/1TBUSBSSD1"  # Temporary storage path
 
 # Ensure the temporary drive is mounted
 if [ ! -d "$TEMP_DRIVE_PATH" ]; then

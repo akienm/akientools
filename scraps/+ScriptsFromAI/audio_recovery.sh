@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Comprehensive Audio Diagnosis and Recovery Script
-LOGFILE="/home/akienm/audio_recovery.log"
+LOGFILE="$HOME/audio_recovery.log"
 
 echo "Audio Diagnosis and Recovery Log - $(date)" > "$LOGFILE"
 echo "----------------------------------------" >> "$LOGFILE"

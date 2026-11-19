@@ -15,5 +15,6 @@ export logcmd
 logecho() {
     echo "$(timestamp) $@"  | tee -a "${logtarget}"
 }
+mkdir -p "$(dirname "${logtarget}")"
 echo "" > "${logtarget}"
 

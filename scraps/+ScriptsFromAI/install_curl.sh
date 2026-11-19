@@ -4,7 +4,7 @@ set -e  # Exit on error
 set -o pipefail  # Exit on first error in a pipeline
 
 # Define source directory
-SRC_DIR="/media/akienm/OneDrive/AkiensWorkshop/dev/src"
+SRC_DIR="/media/${SUDO_USER:-$USER}/OneDrive/AkiensWorkshop/dev/src"
 BUILD_DIR="$SRC_DIR/curl"
 
 echo "Cloning cURL repository into $BUILD_DIR..."

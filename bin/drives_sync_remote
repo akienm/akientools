@@ -13,15 +13,15 @@
 
 # /run/user/1000/kio-fuse-qSouPY/smb/akienm%40gmail.com@10.0.0.99/OneDrive
 # smb://akienm%40gmail.com@10.0.0.99/OneDrive/
-# /media/akienm/AkiensWorld/OneDrive
+# /media/${SUDO_USER:-$USER}/AkiensWorld/OneDrive
 
-# rsync --acls --archive --delete-before --executability --human-readable --one-file-system --verbose --verbose --xattrs /run/user/1000/kio-fuse-qSouPY/smb/akienm%40gmail.com@10.0.0.99/OneDrive/ /media/akienm/AkiensWorld/OneDrive
+# rsync --acls --archive --delete-before --executability --human-readable --one-file-system --verbose --verbose --xattrs /run/user/1000/kio-fuse-qSouPY/smb/akienm%40gmail.com@10.0.0.99/OneDrive/ /media/${SUDO_USER:-$USER}/AkiensWorld/OneDrive
 
 # /run/user/1000/kio-fuse-qSouPY/smb/akienm%40gmail.com@10.0.0.99/GoogleDrive
 # smb://akienm%40gmail.com@10.0.0.99/GoogleDrive/
-# /media/akienm/AkiensWorld/GoogleDrive
+# /media/${SUDO_USER:-$USER}/AkiensWorld/GoogleDrive
 
-# rsync --acls --archive --delete-before --executability --human-readable --one-file-system --verbose --verbose --xattrs /run/user/1000/kio-fuse-qSouPY/smb/akienm%40gmail.com@10.0.0.99/GoogleDrive/ /media/akienm/AkiensWorld/GoogleDrive
+# rsync --acls --archive --delete-before --executability --human-readable --one-file-system --verbose --verbose --xattrs /run/user/1000/kio-fuse-qSouPY/smb/akienm%40gmail.com@10.0.0.99/GoogleDrive/ /media/${SUDO_USER:-$USER}/AkiensWorld/GoogleDrive
 
 onedrive --synchronize --verbose
 

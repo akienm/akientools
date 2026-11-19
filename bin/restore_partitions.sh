@@ -2,7 +2,7 @@
 #!/bin/bash
 # Paths
 NEW_DRIVE="/dev/sdX"                        # Replace with the path to the new drive
-TEMP_DRIVE_PATH="/media/akienm/1TBUSBSSD1"  # Temporary storage path
+TEMP_DRIVE_PATH="/media/${SUDO_USER:-$USER}/1TBUSBSSD1"  # Temporary storage path
 
 # Ensure the temporary drive is mounted
 if [ ! -d "$TEMP_DRIVE_PATH" ]; then

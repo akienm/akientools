@@ -33,7 +33,7 @@
 
 # Set the default log file location if logtarget is not set
 if [ -z "$logtarget" ]; then
-    tmptarget="${HOME}/bin/AkienApps/logs/tmp"
+    tmptarget="${AKIENTOOLS_LOGS:-$HOME/.local/state/akientools/logs}/tmp"
     test ! -d "${tmptarget}" && mkdir "${tmptarget}"
     logtarget="${tmptarget}/${0##*/}.log"
     export logtarget

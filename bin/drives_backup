@@ -12,18 +12,18 @@
 # --xattrs            - Preserve extended attributes
 
 # OneDrive (handled by onedrive sync client) - WE DO NOT HAVE TO REQUEST A SYNC
-# rsync $rsync_defaults_for_whole_drive_backup /media/akienm/OneDrive/ /media/akienm/AkiensWorld/OneDrive
+# rsync $rsync_defaults_for_whole_drive_backup /media/${SUDO_USER:-$USER}/OneDrive/ /media/${SUDO_USER:-$USER}/AkiensWorld/OneDrive
 
 # GoogleDrive (handled by TBD) - AS YET UNKNOWN
 # 1) Run google-drive-ocamlfuse in the command line
-# 2) Create folder for mounting at /media/akienm/GoogleDrive
+# 2) Create folder for mounting at /media/${SUDO_USER:-$USER}/GoogleDrive
 # 3) Run google-drive-ocamlfuse ~/googledrive to mount Google Drive
-# rsync $rsync_defaults_for_whole_drive_backup /media/akienm/GoogleDrive/ /media/akienm/AkiensWorld/GoogleDrive
+# rsync $rsync_defaults_for_whole_drive_backup /media/${SUDO_USER:-$USER}/GoogleDrive/ /media/${SUDO_USER:-$USER}/AkiensWorld/GoogleDrive
 
 # find "$src" -type d -empty -delete
-# rsync -avxc --remove-source-files /media/akienm/NAS1/OLD/ /media/akienm/NAS2AkiensWorld/OLD/
+# rsync -avxc --remove-source-files /media/${SUDO_USER:-$USER}/NAS1/OLD/ /media/${SUDO_USER:-$USER}/NAS2AkiensWorld/OLD/
 
-logtarget=/home/akienm/bin/AkienApps/logs/drives_backup.log
+logtarget=${AKIENTOOLS_LOGS:-$HOME/.local/state/akientools/logs}/drives_backup.log
 . logger_for_bash
 copyafolder() {
     logecho "####################################################################################################"
@@ -62,8 +62,8 @@ fi
 
 if [ "1."=="2." ] ; then
     rsync_parameters="-avx --delete "
-    source=/media/akienm/AkiensWorld/
-    target=/media/akienm/NAS/
+    source=/media/${SUDO_USER:-$USER}/AkiensWorld/
+    target=/media/${SUDO_USER:-$USER}/NAS/
     copyafolder
 
     ####################################################################################################
@@ -72,66 +72,66 @@ if [ "1."=="2." ] ; then
     # a better chance of recovery if there's an issue. The error
     # won't automagically propogate to all the backup devices
 
-    source=/media/akienm/AkiensWorld.bak/Porn/
-    target=/media/akienm/1TBUSBSSD1/
+    source=/media/${SUDO_USER:-$USER}/AkiensWorld.bak/Porn/
+    target=/media/${SUDO_USER:-$USER}/1TBUSBSSD1/
     copyafolder
 
-    source=/media/akienm/AkiensWorld.bak/Dev/
-    target=/media/akienm/1TBUSBSSD1/
+    source=/media/${SUDO_USER:-$USER}/AkiensWorld.bak/Dev/
+    target=/media/${SUDO_USER:-$USER}/1TBUSBSSD1/
     copyafolder
 
-    source=/media/akienm/AkiensWorld.bak/Ebooks/
-    target=/media/akienm/1TBUSBSSD1/
+    source=/media/${SUDO_USER:-$USER}/AkiensWorld.bak/Ebooks/
+    target=/media/${SUDO_USER:-$USER}/1TBUSBSSD1/
     copyafolder
 
-    source=/media/akienm/AkiensWorld.bak/Fonts/
-    target=/media/akienm/1TBUSBSSD1/
+    source=/media/${SUDO_USER:-$USER}/AkiensWorld.bak/Fonts/
+    target=/media/${SUDO_USER:-$USER}/1TBUSBSSD1/
     copyafolder
 
-    source=/media/akienm/AkiensWorld.bak/GoogleDrive/
-    target=/media/akienm/1TBUSBSSD1/
+    source=/media/${SUDO_USER:-$USER}/AkiensWorld.bak/GoogleDrive/
+    target=/media/${SUDO_USER:-$USER}/1TBUSBSSD1/
     copyafolder
 
-    source=/media/akienm/AkiensWorld.bak/Music/
-    target=/media/akienm/1TBUSBSSD1/
+    source=/media/${SUDO_USER:-$USER}/AkiensWorld.bak/Music/
+    target=/media/${SUDO_USER:-$USER}/1TBUSBSSD1/
     copyafolder
 
-    source=/media/akienm/AkiensWorld.bak/MusicRelated/
-    target=/media/akienm/1TBUSBSSD1/
+    source=/media/${SUDO_USER:-$USER}/AkiensWorld.bak/MusicRelated/
+    target=/media/${SUDO_USER:-$USER}/1TBUSBSSD1/
     copyafolder
 
-    source=/media/akienm/AkiensWorld.bak/OneDrive/
-    target=/media/akienm/1TBUSBSSD1/
+    source=/media/${SUDO_USER:-$USER}/AkiensWorld.bak/OneDrive/
+    target=/media/${SUDO_USER:-$USER}/1TBUSBSSD1/
     copyafolder
 
-    source=/media/akienm/AkiensWorld.bak/People/
-    target=/media/akienm/1TBUSBSSD1/
+    source=/media/${SUDO_USER:-$USER}/AkiensWorld.bak/People/
+    target=/media/${SUDO_USER:-$USER}/1TBUSBSSD1/
     copyafolder
 
-    source=/media/akienm/AkiensWorld.bak/Pictures/
-    target=/media/akienm/1TBUSBSSD1/
+    source=/media/${SUDO_USER:-$USER}/AkiensWorld.bak/Pictures/
+    target=/media/${SUDO_USER:-$USER}/1TBUSBSSD1/
     copyafolder
 
-    source=/media/akienm/AkiensWorld.bak/WindowsProvisioning/
-    target=/media/akienm/1TBUSBSSD1/
+    source=/media/${SUDO_USER:-$USER}/AkiensWorld.bak/WindowsProvisioning/
+    target=/media/${SUDO_USER:-$USER}/1TBUSBSSD1/
     copyafolder
 
     ####################################################################################################
     # AkiensWorld.Video on 1TBUSBSSD2
-    source=/media/akienm/AkiensWorld.bak/Video/
-    target=/media/akienm/1TBUSBSSD2/
+    source=/media/${SUDO_USER:-$USER}/AkiensWorld.bak/Video/
+    target=/media/${SUDO_USER:-$USER}/1TBUSBSSD2/
     copyafolder
 
     ####################################################################################################
     # AkiensWorld done after the above so those get the second backup mentioned above.
-    source=/media/akienm/AkiensWorld/
-    target=/media/akienm/AkiensWorld.bak/
+    source=/media/${SUDO_USER:-$USER}/AkiensWorld/
+    target=/media/${SUDO_USER:-$USER}/AkiensWorld.bak/
     copyafolder
 
     ####################################################################################################
     # Boot drive kubuntu_2404
     source=/
-    target=/media/akienm/kubuntu_2404.bak/
+    target=/media/${SUDO_USER:-$USER}/kubuntu_2404.bak/
     rsync_parameters='-avx --delete --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found/*"}'
     copyafolder
 
