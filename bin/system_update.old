@@ -1,0 +1,29 @@
+#!/bin/bash
+logpath=/home/akienm/bin/AkienApps/logs/system_update.log
+item="complete system update"
+echo "Starting $item at: $(date +"%H:%M:%S")" > $logpath 2>&1
+
+do_command() {
+    echo "Starting $item at: $(date +"%H:%M:%S")" 2>&1 | tee -a $logpath
+    echo "$1"  2>&1 | tee -a $logpath
+    $1 2>&1 | tee -a $logpath
+    result_code="${PIPESTATUS[0]}"
+    echo "Command completed with result code $result_code" 2>&1 | tee -a $logpath
+    echo "Ending $item at: $(date +"%H:%M:%S")"  2>&1 | tee -a $logpath
+    echo "" 2>&1 | tee -a $logpath
+}
+
+command="sudo rm -rf /var/lib/dpkg/lock-frontend"
+do_command
+command="sudo rm -rf /var/lib/dpkg/lock"
+do_command
+command="sudo apt-get update"
+do_command
+command="sudo apt-get upgrade -y"
+do_command
+command="sudo apt-get dist-upgrade -y"
+do_command
+command="sudo apt-get autoremove -y"
+do_command
+command="sudo apt-get autoclean -y"
+do_command

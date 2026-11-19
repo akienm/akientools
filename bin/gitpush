@@ -24,7 +24,7 @@
 #
 ################################################################################
 
-source module.logging -q
+source logger_for_bash 
 
 arg1=$1
 shift

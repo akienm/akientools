@@ -16,4 +16,4 @@ logecho() {
     echo "$(timestamp) $@"  | tee -a "${logtarget}"
 }
 echo "" > "${logtarget}"
-chmod 777 "${logtarget}"
+
