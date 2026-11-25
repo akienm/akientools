@@ -5,6 +5,12 @@
 #   bash setup_update.sh --run-now  # installs, then runs one update immediately as a test
 #   bash setup_update.sh --uninstall
 #
+# Sudo: the installer asks for the sudo password once (normal sudo prompt). The 06:00 run
+# needs no sudo at all — systemd runs it as root. The installer also writes
+# /etc/sudoers.d/daily-auto-update so the installing user can trigger a run by hand with NO
+# password, on any box:   sudo systemctl start daily-auto-update.service
+#                     or: sudo /usr/local/sbin/daily-auto-update.sh
+#
 # What it installs:
 #   /usr/local/sbin/daily-auto-update.sh          the update itself (runs as root)
 #   /etc/systemd/system/daily-auto-update.service oneshot that runs it
@@ -22,7 +28,7 @@ SUDO=; [ "$(id -u)" = 0 ] || SUDO=sudo
 
 if [ "$1" = --uninstall ]; then
   $SUDO systemctl disable --now daily-auto-update.timer 2>/dev/null || true
-  $SUDO rm -f /usr/local/sbin/daily-auto-update.sh \
+  $SUDO rm -f /usr/local/sbin/daily-auto-update.sh /etc/sudoers.d/daily-auto-update \
               /etc/systemd/system/daily-auto-update.service /etc/systemd/system/daily-auto-update.timer
   $SUDO systemctl daemon-reload
   echo "daily-auto-update removed (logs left in place)."
@@ -119,6 +125,23 @@ AccuracySec=1min
 [Install]
 WantedBy=timers.target
 EOF
+
+# ---------------------------------------------------------------- sudo pre-approval
+# Exactly the commands that start an update; nothing broader. Validated before install,
+# because a broken sudoers file locks sudo out entirely.
+SYSTEMCTL=$(command -v systemctl)
+SUDOERS_TMP=$(mktemp)
+cat >"$SUDOERS_TMP" <<EOF
+# Installed by akientools/installers/setup_update.sh — lets $OWNER start the daily update
+# by hand without a password. Remove with: setup_update.sh --uninstall
+$OWNER ALL=(root) NOPASSWD: $SYSTEMCTL start daily-auto-update.service, $SYSTEMCTL start --no-block daily-auto-update.service, /usr/local/sbin/daily-auto-update.sh
+EOF
+if $SUDO visudo -cf "$SUDOERS_TMP" >/dev/null; then
+  $SUDO install -m 440 -o root -g root "$SUDOERS_TMP" /etc/sudoers.d/daily-auto-update
+else
+  echo "WARNING: generated sudoers rule failed validation — not installed." >&2
+fi
+rm -f "$SUDOERS_TMP"
 
 $SUDO systemctl daemon-reload
 $SUDO systemctl enable --now daily-auto-update.timer
